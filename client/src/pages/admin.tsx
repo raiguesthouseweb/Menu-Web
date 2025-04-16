@@ -124,8 +124,6 @@ const passwordChangeSchema = z.object({
 });
 
 const sheetsConfigSchema = z.object({
-  menuSpreadsheetId: z.string().min(10, { message: "Spreadsheet ID is required" }),
-  menuSheetId: z.string(),
   ordersSpreadsheetId: z.string().min(10, { message: "Spreadsheet ID is required" }),
   ordersSheetId: z.string(),
   tourismSpreadsheetId: z.string().min(10, { message: "Spreadsheet ID is required" }),
@@ -268,8 +266,6 @@ export default function Admin() {
   const sheetsConfigForm = useForm<z.infer<typeof sheetsConfigSchema>>({
     resolver: zodResolver(sheetsConfigSchema),
     defaultValues: {
-      menuSpreadsheetId: menuSpreadsheetId,
-      menuSheetId: menuSheetId,
       ordersSpreadsheetId: ordersSpreadsheetId,
       ordersSheetId: ordersSheetId,
       tourismSpreadsheetId: tourismSpreadsheetId,
@@ -342,8 +338,6 @@ export default function Admin() {
   
   // Update form defaults when external state changes
   useEffect(() => {
-    sheetsConfigForm.setValue("menuSpreadsheetId", menuSpreadsheetId);
-    sheetsConfigForm.setValue("menuSheetId", menuSheetId);
     sheetsConfigForm.setValue("ordersSpreadsheetId", ordersSpreadsheetId);
     sheetsConfigForm.setValue("ordersSheetId", ordersSheetId);
     sheetsConfigForm.setValue("tourismSpreadsheetId", tourismSpreadsheetId);
@@ -353,7 +347,6 @@ export default function Admin() {
     themeSettingsForm.setValue("primaryColor", primaryColor);
     themeSettingsForm.setValue("fontFamily", fontFamily);
   }, [
-    menuSpreadsheetId, menuSheetId, 
     ordersSpreadsheetId, ordersSheetId, 
     tourismSpreadsheetId, tourismSheetId,
     brandName, primaryColor, fontFamily
@@ -1160,46 +1153,7 @@ export default function Admin() {
             <CardContent className="p-6">
               <Form {...sheetsConfigForm}>
                 <form onSubmit={sheetsConfigForm.handleSubmit(saveSheetSettings)} className="space-y-6">
-                  <div className="space-y-4">
-                    <h3 className="font-medium text-lg">Menu Sheet Configuration</h3>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <FormField
-                        control={sheetsConfigForm.control}
-                        name="menuSpreadsheetId"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Menu Spreadsheet ID</FormLabel>
-                            <FormControl>
-                              <Input {...field} placeholder="Enter Google Spreadsheet ID" />
-                            </FormControl>
-                            <FormDescription>
-                              The ID from your Google Sheets URL
-                            </FormDescription>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      
-                      <FormField
-                        control={sheetsConfigForm.control}
-                        name="menuSheetId"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Menu Sheet GID</FormLabel>
-                            <FormControl>
-                              <Input {...field} placeholder="0" />
-                            </FormControl>
-                            <FormDescription>
-                              Usually 0 for the first sheet
-                            </FormDescription>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                  </div>
-                  
-                  <Separator />
+
                   
                   <div className="space-y-4">
                     <h3 className="font-medium text-lg">Orders Sheet Configuration</h3>

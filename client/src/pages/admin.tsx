@@ -96,7 +96,8 @@ const menuItemSchema = z.object({
   price: z.coerce.number().min(1, { message: "Price must be greater than 0" }),
   purchasePrice: z.coerce.number().min(0, { message: "Purchase price must not be negative" }).optional(),
   category: z.string({ required_error: "Please select a category" }),
-  details: z.string().optional()
+  details: z.string().optional(),
+  disabled: z.boolean().optional().default(false)
 });
 
 const tourismPlaceSchema = z.object({
@@ -233,7 +234,8 @@ export default function Admin() {
       price: 0,
       purchasePrice: 0,
       category: "",
-      details: ""
+      details: "",
+      disabled: false
     }
   });
   

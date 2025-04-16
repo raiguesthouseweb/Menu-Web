@@ -239,8 +239,9 @@ export function useOrders(filterBy?: string) {
       if (settled !== undefined) updates.settled = settled;
       if (restaurantPaid !== undefined) updates.restaurantPaid = restaurantPaid;
       
-      const res = await apiRequest("PATCH", `/api/orders/${id}/status`, updates);
-      return res.json();
+      // Import and use the authenticated API
+      const { patch } = await import('@/hooks/use-authenticated-api').then(mod => mod.useAuthenticatedApi());
+      return patch(`/api/orders/${id}/status`, updates);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/orders'] });
@@ -381,8 +382,9 @@ export function useAdminUsers() {
 
   const { mutate: addAdminUser } = useMutation({
     mutationFn: async (userData: { username: string; password: string; isAdmin: boolean; }) => {
-      const res = await apiRequest("POST", "/api/users", userData);
-      return res.json();
+      // Import and use the authenticated API
+      const { post } = await import('@/hooks/use-authenticated-api').then(mod => mod.useAuthenticatedApi());
+      return post("/api/users", userData);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/users'] });
@@ -402,8 +404,9 @@ export function useAdminUsers() {
 
   const { mutate: getActivityLogs } = useMutation({
     mutationFn: async () => {
-      const res = await apiRequest("GET", "/api/activity-logs");
-      return res.json();
+      // Import and use the authenticated API
+      const { get } = await import('@/hooks/use-authenticated-api').then(mod => mod.useAuthenticatedApi());
+      return get("/api/activity-logs");
     },
     onSuccess: (data) => {
       queryClient.setQueryData(['/api/activity-logs'], data);

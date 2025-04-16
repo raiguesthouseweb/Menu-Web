@@ -6,12 +6,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useLanguage } from "@/hooks/use-language";
+import { useLanguage, LanguageCode } from "@/hooks/use-language";
 import { languageNames } from "@/lib/translations";
 
 // Create array of language objects from languageNames
 const languages = Object.entries(languageNames).map(([code, name]) => ({
-  code,
+  code: code as LanguageCode,
   name
 }));
 

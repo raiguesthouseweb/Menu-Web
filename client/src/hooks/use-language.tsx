@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 
-type LanguageCode = "en" | "hi" | "bn" | "te" | "ta" | "mr" | "kn" | "gu";
+export type LanguageCode = "en" | "hi" | "bn" | "te" | "ta" | "mr" | "kn" | "gu";
 
 type LanguageProviderProps = {
   children: React.ReactNode;

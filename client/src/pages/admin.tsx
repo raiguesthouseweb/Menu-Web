@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useMenuItems, useOrders, useTourismPlaces, useBulkSettings, useAdminUsers } from "@/hooks/use-api";
 import { useWebSocket } from "@/hooks/use-websocket";
@@ -147,6 +147,86 @@ const themeSettingsSchema = z.object({
 });
 
 // Main component
+// OrderRow component for expandable order rows
+interface OrderRowProps {
+  order: Order;
+  onStatusChange: (orderId: number, newStatus: string) => void;
+}
+
+function OrderRow({ order, onStatusChange }: OrderRowProps) {
+  const [isExpanded, setIsExpanded] = useState(false);
+  
+  return (
+    <React.Fragment>
+      <TableRow className="cursor-pointer hover:bg-muted/50" onClick={() => setIsExpanded(!isExpanded)}>
+        <TableCell>{order.id}</TableCell>
+        <TableCell>{formatDate(order.timestamp)}</TableCell>
+        <TableCell>{order.name || "—"}</TableCell>
+        <TableCell>{order.roomNumber}</TableCell>
+        <TableCell>{formatPrice(order.total)}</TableCell>
+        <TableCell onClick={(e) => e.stopPropagation()}>
+          <Select 
+            defaultValue={order.status}
+            onValueChange={(value) => onStatusChange(order.id, value)}
+          >
+            <SelectTrigger className="w-[130px]">
+              <SelectValue placeholder={order.status} />
+            </SelectTrigger>
+            <SelectContent>
+              {ORDER_STATUS_OPTIONS.map((status) => (
+                <SelectItem key={status} value={status}>{status}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </TableCell>
+        <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
+          <Button 
+            variant="default" 
+            size="sm"
+            onClick={() => onStatusChange(order.id, order.status)}
+          >
+            Update
+          </Button>
+        </TableCell>
+      </TableRow>
+      {isExpanded && (
+        <TableRow>
+          <TableCell colSpan={7} className="px-4 py-3 bg-muted/20">
+            <div className="text-sm">
+              <h4 className="font-medium mb-2">Order Details</h4>
+              <div className="space-y-2">
+                {order.items.map((item, idx) => (
+                  <div key={idx} className="flex justify-between items-center border-b border-muted pb-2">
+                    <div>
+                      <span className="font-medium">{item.name}</span>
+                      <span className="ml-2 text-muted-foreground">x{item.quantity}</span>
+                      {item.details && (
+                        <p className="text-xs text-muted-foreground mt-1">{item.details}</p>
+                      )}
+                    </div>
+                    <div className="text-right">
+                      <div>{formatPrice(item.price * item.quantity)}</div>
+                      {item.purchasePrice && (
+                        <div className="text-xs text-muted-foreground">
+                          Cost: {formatPrice(item.purchasePrice * item.quantity)}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+                <div className="flex justify-between font-medium pt-2">
+                  <span>Total</span>
+                  <span>{formatPrice(order.total)}</span>
+                </div>
+              </div>
+            </div>
+          </TableCell>
+        </TableRow>
+      )}
+    </React.Fragment>
+  );
+}
+
 export default function Admin() {
   const { user, isAuthenticated, logout } = useAuth();
   const queryClient = useQueryClient();
@@ -799,37 +879,11 @@ export default function Admin() {
                       </TableHeader>
                       <TableBody>
                         {filteredOrders.map((order) => (
-                          <TableRow key={order.id}>
-                            <TableCell>{order.id}</TableCell>
-                            <TableCell>{formatDate(order.timestamp)}</TableCell>
-                            <TableCell>{order.name || "—"}</TableCell>
-                            <TableCell>{order.roomNumber}</TableCell>
-                            <TableCell>{formatPrice(order.total)}</TableCell>
-                            <TableCell>
-                              <Select 
-                                defaultValue={order.status}
-                                onValueChange={(value) => handleStatusChange(order.id, value)}
-                              >
-                                <SelectTrigger className="w-[130px]">
-                                  <SelectValue placeholder={order.status} />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {ORDER_STATUS_OPTIONS.map((status) => (
-                                    <SelectItem key={status} value={status}>{status}</SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            </TableCell>
-                            <TableCell className="text-right">
-                              <Button 
-                                variant="default" 
-                                size="sm"
-                                onClick={() => handleStatusChange(order.id, order.status)}
-                              >
-                                Update
-                              </Button>
-                            </TableCell>
-                          </TableRow>
+                          <OrderRow 
+                            key={order.id} 
+                            order={order} 
+                            onStatusChange={handleStatusChange} 
+                          />
                         ))}
                       </TableBody>
                     </Table>

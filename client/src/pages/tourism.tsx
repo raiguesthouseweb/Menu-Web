@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useTourismPlaces } from "@/hooks/use-api";
 import { TOURISM_TAGS } from "@/config/constants";
+import { useLanguage } from "@/hooks/use-language";
+import { useTranslation } from "@/lib/translations";
 
 import { 
   Card, 
@@ -27,6 +29,8 @@ import {
 export default function Tourism() {
   const { tourismPlaces, loading, error } = useTourismPlaces();
   const [selectedTag, setSelectedTag] = useState("All");
+  const { language } = useLanguage();
+  const t = useTranslation(language);
   
   // Update page title
   useEffect(() => {
@@ -40,7 +44,7 @@ export default function Tourism() {
 
   return (
     <div>
-      <h2 className="text-2xl font-bold mb-6">Explore Ujjain</h2>
+      <h2 className="text-2xl font-bold mb-6">{t('tourism.title')}</h2>
       
       {/* Filter Tags */}
       <Tabs 
@@ -52,7 +56,11 @@ export default function Tourism() {
         <TabsList className="w-full sm:w-auto flex flex-wrap">
           {TOURISM_TAGS.map(tag => (
             <TabsTrigger key={tag} value={tag}>
-              {tag}
+              {tag === "All" ? t('tourism.filter.all') : 
+               tag === "Religious" ? t('tourism.filter.religious') :
+               tag === "Heritage" ? t('tourism.filter.heritage') :
+               tag === "Romantic" ? t('tourism.filter.romantic') :
+               tag === "Educational" ? t('tourism.filter.educational') : tag}
             </TabsTrigger>
           ))}
         </TabsList>
@@ -85,7 +93,7 @@ export default function Tourism() {
           {filteredPlaces.length === 0 ? (
             <div className="col-span-full text-center py-12">
               <p className="text-gray-500 dark:text-gray-400">
-                No places found matching the selected filter.
+                {t('tourism.noResults')}
               </p>
             </div>
           ) : (

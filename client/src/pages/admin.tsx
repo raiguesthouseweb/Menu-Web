@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import { useMenuItems, useOrders, useTourismPlaces, useBulkSettings } from "@/hooks/use-api";
 import { useWebSocket } from "@/hooks/use-websocket";
-import { ADMIN_PASSWORD, MENU_CATEGORIES, TOURISM_TAGS, ORDER_STATUS_OPTIONS } from "@/config/constants";
+import { MENU_CATEGORIES, TOURISM_TAGS, ORDER_STATUS_OPTIONS } from "@/config/constants";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/use-auth";
 import { formatPrice, formatDate } from "@/lib/utils";
 import { MenuItem, Order, TourismPlace } from "@/types";
+import { AdminLogin } from "@/components/admin-login";
 
 import { 
   Card, 
@@ -138,8 +140,7 @@ const themeSettingsSchema = z.object({
 
 // Main component
 export default function Admin() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [password, setPassword] = useState("");
+  const { user, isAuthenticated, logout } = useAuth();
   const [activeTab, setActiveTab] = useState("dashboard");
   const [searchQuery, setSearchQuery] = useState("");
   
@@ -289,14 +290,11 @@ export default function Admin() {
     }
   });
   
-  // Update page title and check login status
+  // Update page title and fetch data when authenticated
   useEffect(() => {
     document.title = "Admin Panel | Rai Guest House";
     
-    // Check if already logged in
-    const adminLoggedIn = localStorage.getItem("adminLoggedIn") === "true";
-    if (adminLoggedIn) {
-      setIsLoggedIn(true);
+    if (isAuthenticated) {
       fetchOrders();
     }
     

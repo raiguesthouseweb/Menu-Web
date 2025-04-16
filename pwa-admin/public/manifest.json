@@ -1,0 +1,46 @@
+{
+  "short_name": "Rai Admin",
+  "name": "Rai Guest House Admin",
+  "icons": [
+    {
+      "src": "favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "logo192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "logo512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    },
+    {
+      "src": "maskable_icon.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "maskable"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#4f46e5",
+  "background_color": "#ffffff",
+  "orientation": "portrait",
+  "categories": ["business", "productivity"],
+  "description": "Admin panel for Rai Guest House orders and management",
+  "gcm_sender_id": "103953800507",
+  "related_applications": [],
+  "prefer_related_applications": false,
+  "shortcuts": [
+    {
+      "name": "New Orders",
+      "short_name": "Orders",
+      "description": "View new orders",
+      "url": "/orders",
+      "icons": [{ "src": "order_icon.png", "sizes": "192x192" }]
+    }
+  ]
+}

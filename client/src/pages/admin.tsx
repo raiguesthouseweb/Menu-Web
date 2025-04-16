@@ -447,7 +447,8 @@ export default function Admin() {
         price: data.price,
         purchasePrice: data.purchasePrice,
         category: data.category,
-        details: data.details
+        details: data.details,
+        disabled: data.disabled
       };
       
       // Use API to update
@@ -460,7 +461,8 @@ export default function Admin() {
         price: data.price,
         purchasePrice: data.purchasePrice,
         category: data.category || "",
-        details: data.details
+        details: data.details,
+        disabled: data.disabled || false
       });
     }
     
@@ -472,6 +474,22 @@ export default function Admin() {
   const handleDeleteMenuItem = (itemId: number) => {
     // Use API to delete the item
     deleteMenuItem(itemId);
+  };
+  
+  const handleToggleMenuItemStatus = (item: MenuItem) => {
+    // Update with toggled disabled status
+    const updatedItem = {
+      ...item,
+      disabled: !item.disabled
+    };
+    
+    // Use API to update the item
+    updateMenuItem(updatedItem);
+    
+    toast({
+      title: updatedItem.disabled ? "Item disabled" : "Item enabled",
+      description: `${item.name} has been ${updatedItem.disabled ? "disabled" : "enabled"}`,
+    });
   };
   
   const handleSaveTourismPlace = (data: z.infer<typeof tourismPlaceSchema>) => {

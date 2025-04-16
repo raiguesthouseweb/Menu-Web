@@ -372,29 +372,9 @@ export default function Admin() {
     }
   }, [editingTourismPlace, tourismPlaceForm]);
   
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (password === ADMIN_PASSWORD) {
-      setIsLoggedIn(true);
-      localStorage.setItem("adminLoggedIn", "true");
-      fetchOrders();
-      toast({
-        title: "Login successful",
-        description: "Welcome to the admin panel",
-      });
-    } else {
-      toast({
-        title: "Login failed",
-        description: "Incorrect password. Please try again.",
-        variant: "destructive",
-      });
-    }
-  };
-  
+  // Use the global auth logout function
   const handleLogout = () => {
-    setIsLoggedIn(false);
-    localStorage.removeItem("adminLoggedIn");
+    logout();
     toast({
       title: "Logged out",
       description: "You have been logged out successfully",
@@ -526,23 +506,22 @@ export default function Admin() {
     deleteTourismPlace(placeId);
   };
   
-  const handleChangePassword = (data: z.infer<typeof passwordChangeSchema>) => {
-    if (data.currentPassword !== ADMIN_PASSWORD) {
+  const handleChangePassword = async (data: z.infer<typeof passwordChangeSchema>) => {
+    try {
+      // In a real app, you would update the password using API
+      toast({
+        title: "Password updated",
+        description: "Your password has been changed successfully",
+      });
+      
+      passwordChangeForm.reset();
+    } catch (error) {
       toast({
         title: "Error",
-        description: "Current password is incorrect",
+        description: "Failed to update password. Please try again.",
         variant: "destructive",
       });
-      return;
     }
-    
-    // In a real app, you would update the password in a secure way
-    toast({
-      title: "Password updated",
-      description: "Your password has been changed successfully",
-    });
-    
-    passwordChangeForm.reset();
   };
   
   const handleSaveThemeSettings = (data: z.infer<typeof themeSettingsSchema>) => {
@@ -679,37 +658,8 @@ export default function Admin() {
     : orders;
   
   // Login screen
-  if (!isLoggedIn) {
-    return (
-      <div className="flex justify-center items-center py-16">
-        <Card className="w-full max-w-md">
-          <CardContent className="pt-6">
-            <div className="flex justify-center mb-8">
-              <Shield className="h-16 w-16 text-gray-300 dark:text-gray-600" />
-            </div>
-            
-            <h2 className="text-2xl font-bold mb-6 text-center">Admin Access</h2>
-            
-            <form onSubmit={handleLogin}>
-              <div className="mb-6">
-                <label className="block text-sm font-medium mb-2">Password</label>
-                <Input 
-                  type="password" 
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Enter admin password"
-                  required
-                />
-              </div>
-              
-              <Button type="submit" className="w-full">
-                Login
-              </Button>
-            </form>
-          </CardContent>
-        </Card>
-      </div>
-    );
+  if (!isAuthenticated) {
+    return <AdminLogin />;
   }
 
   // Main admin panel

@@ -162,7 +162,7 @@ export default function OrderStatus() {
                       variant="outline"
                       className={getStatusColor(order.status)}
                     >
-                      {order.status}
+                      {getTranslatedStatus(order.status)}
                     </Badge>
                   </div>
                   
@@ -180,7 +180,7 @@ export default function OrderStatus() {
                   </div>
                   
                   <div className="mt-4 pt-3 border-t dark:border-gray-700 flex justify-between font-medium">
-                    <span>Total</span>
+                    <span>{t('common.total')}</span>
                     <span>{formatPrice(order.total)}</span>
                   </div>
                 </CardContent>

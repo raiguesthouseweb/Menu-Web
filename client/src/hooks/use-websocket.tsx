@@ -88,11 +88,16 @@ export function useWebSocket({
           console.log('WebSocket message received:', data);
           setLastMessage(data);
           
+          // Check if user is admin - used for all notification types
+          const isAdmin = localStorage.getItem('adminLoggedIn') === 'true';
+          
           // Handle different message types
           switch (data.type) {
             case 'new-order':
               onNewOrder?.(data.order);
-              if (showToasts) {
+              
+              // Only show new order notifications to admins
+              if (showToasts && isAdmin) {
                 toast({
                   title: 'New Order Received',
                   description: `Order #${data.order.id} from ${data.order.name || 'Guest'} (Room ${data.order.roomNumber})`,
@@ -110,7 +115,13 @@ export function useWebSocket({
               
             case 'order-status-update':
               onOrderStatusUpdate?.(data.order);
-              if (showToasts) {
+              
+              // For order status updates, check if it's their order
+              const orderDetails = JSON.parse(localStorage.getItem('orderDetails') || '{}');
+              const isMyOrder = orderDetails.roomNumber === data.order.roomNumber ||
+                               orderDetails.mobileNumber === data.order.mobileNumber;
+                               
+              if (showToasts && (isAdmin || isMyOrder)) {
                 toast({
                   title: 'Order Status Updated',
                   description: `Order #${data.order.id} status changed to ${data.order.status}`,

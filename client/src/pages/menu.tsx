@@ -212,7 +212,11 @@ export default function Menu() {
         {!loading && !error && (
           <div className="space-y-8">
             {MENU_CATEGORIES.map((category) => {
-              const categoryItems = menuItems.filter(item => item.category === category);
+              // Only show enabled items
+              const categoryItems = menuItems.filter(item => 
+                item.category === category && 
+                !item.disabled
+              );
               
               if (categoryItems.length === 0) return null;
               
@@ -223,7 +227,11 @@ export default function Menu() {
                     onOpenChange={() => toggleCategory(category)}
                   >
                     <CollapsibleTrigger asChild>
-                      <div className="flex items-center justify-between cursor-pointer py-2 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md transition-colors">
+                      <div 
+                        className={`flex items-center justify-between cursor-pointer py-2 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md transition-colors ${
+                          expandedCategories[category] ? 'bg-primary/10' : ''
+                        }`}
+                      >
                         <h3 className="text-xl font-semibold text-primary ml-2">{category}</h3>
                         <div className="w-9 flex items-center justify-center">
                           {expandedCategories[category] ? 

@@ -326,6 +326,10 @@ export default function Admin() {
         if (settings.qrAutoFill !== undefined) setQrAutoFill(settings.qrAutoFill);
         if (settings.orderAlertSound !== undefined) setOrderAlertSound(settings.orderAlertSound);
         if (settings.whatsappAlerts !== undefined) setWhatsappAlerts(settings.whatsappAlerts);
+        
+        // Calendar settings
+        if (settings.calendarId) setCalendarId(settings.calendarId);
+        if (settings.showEventsCalendar !== undefined) setShowEventsCalendar(settings.showEventsCalendar);
       } catch (error) {
         console.error("Error parsing saved settings:", error);
       }
@@ -601,7 +605,9 @@ export default function Admin() {
       ...JSON.parse(localStorage.getItem("adminSettings") || "{}"),
       qrAutoFill,
       orderAlertSound,
-      whatsappAlerts
+      whatsappAlerts,
+      calendarId,
+      showEventsCalendar
     };
     localStorage.setItem("adminSettings", JSON.stringify(settings));
     
@@ -1918,7 +1924,93 @@ export default function Admin() {
                       <p className="text-sm text-gray-500 dark:text-gray-400 text-center">
                         Real-time alerts when new orders arrive
                       </p>
-                      <Button variant="outline" className="w-full mt-4">Configure</Button>
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Button variant="outline" className="w-full mt-4">Configure</Button>
+                        </DialogTrigger>
+                        <DialogContent className="sm:max-w-[500px]">
+                          <DialogHeader>
+                            <DialogTitle>Order Notification Settings</DialogTitle>
+                            <DialogDescription>
+                              Configure how you want to be notified when new orders arrive.
+                            </DialogDescription>
+                          </DialogHeader>
+                          
+                          <div className="space-y-4 py-4">
+                            <div className="flex items-center space-x-2">
+                              <Checkbox 
+                                id="orderAlertSound" 
+                                checked={orderAlertSound}
+                                onCheckedChange={(checked) => 
+                                  setOrderAlertSound(checked === true)
+                                }
+                              />
+                              <label
+                                htmlFor="orderAlertSound"
+                                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                              >
+                                Play sound alert for new orders
+                              </label>
+                            </div>
+                            
+                            {orderAlertSound && (
+                              <div className="pl-6 flex items-center space-x-2">
+                                <Button 
+                                  variant="outline" 
+                                  size="sm"
+                                  onClick={() => {
+                                    const audio = new Audio("/notification.mp3");
+                                    audio.play().catch(e => console.log("Error playing sound:", e));
+                                  }}
+                                >
+                                  <Play className="h-4 w-4 mr-2" />
+                                  Test Sound
+                                </Button>
+                              </div>
+                            )}
+                            
+                            <div className="flex items-center space-x-2">
+                              <Checkbox 
+                                id="whatsappAlerts" 
+                                checked={whatsappAlerts}
+                                onCheckedChange={(checked) => 
+                                  setWhatsappAlerts(checked === true)
+                                }
+                              />
+                              <label
+                                htmlFor="whatsappAlerts"
+                                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                              >
+                                Enable WhatsApp notifications (requires APK setup)
+                              </label>
+                            </div>
+                            
+                            <Separator className="my-2" />
+                            
+                            <div>
+                              <h4 className="text-sm font-medium mb-1">Android APK Setup Instructions</h4>
+                              <p className="text-xs text-gray-500 mb-2">
+                                The Android APK allows you to receive notifications on your phone even when browser is closed.
+                              </p>
+                              <ol className="text-xs text-gray-500 space-y-1 list-decimal pl-4">
+                                <li>Download the Rai Guest House Notifications APK</li>
+                                <li>Install on your Android device</li>
+                                <li>Open the app and scan the connection QR code</li>
+                                <li>Allow notifications and keep app running in background</li>
+                              </ol>
+                              <Button className="mt-3 w-full" disabled>
+                                Download APK (Coming Soon)
+                              </Button>
+                            </div>
+                            
+                            <Separator className="my-2" />
+                            
+                            <Button onClick={saveGeneralSettings} className="w-full">
+                              Save Notification Settings
+                            </Button>
+                          </div>
+                        </DialogContent>
+                      </Dialog>
                     </CardContent>
                   </Card>
                   
@@ -1933,7 +2025,114 @@ export default function Admin() {
                       <p className="text-sm text-gray-500 dark:text-gray-400 text-center">
                         Display local events from Google Calendar
                       </p>
-                      <Button variant="outline" className="w-full mt-4">Setup</Button>
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Button variant="outline" className="w-full mt-4">Setup</Button>
+                        </DialogTrigger>
+                        <DialogContent className="sm:max-w-[600px]">
+                          <DialogHeader>
+                            <DialogTitle>Events Calendar Integration</DialogTitle>
+                            <DialogDescription>
+                              Connect your Google Calendar to display local events on the guest house website.
+                            </DialogDescription>
+                          </DialogHeader>
+                          
+                          <div className="space-y-4 py-4">
+                            <div>
+                              <Label htmlFor="calendarId">Google Calendar ID</Label>
+                              <Input 
+                                id="calendarId" 
+                                placeholder="e.g. example@gmail.com or calendar ID" 
+                                className="mt-1"
+                                value={calendarId}
+                                onChange={(e) => setCalendarId(e.target.value)}
+                              />
+                              <p className="text-xs text-gray-500 mt-1">
+                                Find this in your Google Calendar settings under "Calendar Integration"
+                              </p>
+                            </div>
+                            
+                            <div className="flex items-center space-x-2">
+                              <Checkbox 
+                                id="showEventsCalendar" 
+                                checked={showEventsCalendar}
+                                onCheckedChange={(checked) => 
+                                  setShowEventsCalendar(checked === true)
+                                }
+                              />
+                              <label
+                                htmlFor="showEventsCalendar"
+                                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                              >
+                                Enable Events Calendar on website
+                              </label>
+                            </div>
+                            
+                            <div className="pt-2">
+                              <Button 
+                                onClick={() => {
+                                  if (!calendarId) {
+                                    toast({
+                                      title: "Error",
+                                      description: "Please enter a valid Calendar ID",
+                                      variant: "destructive",
+                                    });
+                                    return;
+                                  }
+                                  
+                                  // Save the settings
+                                  const settings = {
+                                    ...JSON.parse(localStorage.getItem("adminSettings") || "{}"),
+                                    calendarId,
+                                    showEventsCalendar
+                                  };
+                                  localStorage.setItem("adminSettings", JSON.stringify(settings));
+                                  
+                                  // Fetch sample events to display in the preview
+                                  fetch(`https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendarId)}/events?key=${import.meta.env.VITE_GOOGLE_API_KEY}&maxResults=5&timeMin=${new Date().toISOString()}`)
+                                    .then(res => {
+                                      if (!res.ok) throw new Error("Failed to fetch calendar events");
+                                      return res.json();
+                                    })
+                                    .then(data => {
+                                      setCalendarEvents(data.items || []);
+                                      toast({
+                                        title: "Calendar connected",
+                                        description: "Events calendar has been connected successfully",
+                                      });
+                                    })
+                                    .catch(err => {
+                                      toast({
+                                        title: "Connection error",
+                                        description: err.message,
+                                        variant: "destructive",
+                                      });
+                                    });
+                                }}
+                                className="w-full"
+                              >
+                                Connect Calendar
+                              </Button>
+                            </div>
+                            
+                            {calendarEvents.length > 0 && (
+                              <div className="mt-4">
+                                <h4 className="font-medium mb-2">Upcoming Events Preview</h4>
+                                <ul className="space-y-2">
+                                  {calendarEvents.map((event, index) => (
+                                    <li key={index} className="border p-2 rounded-md">
+                                      <p className="font-medium">{event.summary}</p>
+                                      <p className="text-xs text-gray-500">
+                                        {new Date(event.start?.dateTime || event.start?.date).toLocaleString()}
+                                      </p>
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
+                            )}
+                          </div>
+                        </DialogContent>
+                      </Dialog>
                     </CardContent>
                   </Card>
                   

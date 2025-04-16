@@ -88,6 +88,26 @@ export default function Menu() {
       });
       setExpandedCategories(initialExpanded);
     }
+    
+    // Check for room parameter in URL (for QR code scanning)
+    const params = new URLSearchParams(window.location.search);
+    const roomParam = params.get('room');
+    if (roomParam) {
+      // Auto-fill the room number in the order form
+      form.setValue('roomNumber', roomParam);
+      
+      // Update order details state
+      setOrderDetails({
+        ...orderDetails,
+        roomNumber: roomParam
+      });
+      
+      // Show toast notification
+      toast({
+        title: "Room detected",
+        description: `Ordering for Room ${roomParam}`,
+      });
+    }
   }, []);
   
   // Toggle category expansion

@@ -7,7 +7,7 @@
     <meta name="theme-color" content="#4f46e5" />
     <meta
       name="description"
-      content="Rai Guest House Admin Panel"
+      content="Rai Guest House Admin - Manage orders and receive notifications"
     />
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
     <!--
@@ -19,35 +19,133 @@
       Notice the use of %PUBLIC_URL% in the tags above.
       It will be replaced with the URL of the `public` folder during the build.
       Only files inside the `public` folder can be referenced from the HTML.
+
+      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
+      work correctly both with client-side routing and a non-root public URL.
+      Learn how to configure a non-root public URL by running `npm run build`.
     -->
-    <title>Rai Admin Panel</title>
-    <!-- Preload critical assets -->
-    <link rel="preload" href="%PUBLIC_URL%/static/media/notification.wav" as="audio" />
-    
-    <!-- Add meta tags for mobile web app -->
+    <!-- iOS specific meta tags -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Rai Admin">
     
-    <!-- Add splash screens for iOS -->
-    <link rel="apple-touch-startup-image" href="%PUBLIC_URL%/splash/apple-splash-2048-2732.jpg" media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
-    <link rel="apple-touch-startup-image" href="%PUBLIC_URL%/splash/apple-splash-1668-2388.jpg" media="(device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
-    <link rel="apple-touch-startup-image" href="%PUBLIC_URL%/splash/apple-splash-1536-2048.jpg" media="(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
-    <link rel="apple-touch-startup-image" href="%PUBLIC_URL%/splash/apple-splash-1242-2688.jpg" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
-    <link rel="apple-touch-startup-image" href="%PUBLIC_URL%/splash/apple-splash-1125-2436.jpg" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
-    <link rel="apple-touch-startup-image" href="%PUBLIC_URL%/splash/apple-splash-828-1792.jpg" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
-    <link rel="apple-touch-startup-image" href="%PUBLIC_URL%/splash/apple-splash-750-1334.jpg" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
-    <link rel="apple-touch-startup-image" href="%PUBLIC_URL%/splash/apple-splash-640-1136.jpg" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+    <!-- iOS splash screens -->
+    <link rel="apple-touch-startup-image" href="%PUBLIC_URL%/splash/apple-splash-2048-2732.png" media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+    <link rel="apple-touch-startup-image" href="%PUBLIC_URL%/splash/apple-splash-1668-2388.png" media="(device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+    <link rel="apple-touch-startup-image" href="%PUBLIC_URL%/splash/apple-splash-1536-2048.png" media="(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+    <link rel="apple-touch-startup-image" href="%PUBLIC_URL%/splash/apple-splash-1125-2436.png" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+    <link rel="apple-touch-startup-image" href="%PUBLIC_URL%/splash/apple-splash-1242-2688.png" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+    <link rel="apple-touch-startup-image" href="%PUBLIC_URL%/splash/apple-splash-750-1334.png" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+    
+    <!-- Preload fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <title>Rai Guest House Admin</title>
+    
+    <style>
+      /* Initial loading indicator styles */
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: 'Inter', sans-serif;
+      }
+      
+      #loading-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        height: 100vh;
+        width: 100vw;
+        background-color: #f5f7fb;
+      }
+      
+      .spinner {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        border: 4px solid rgba(79, 70, 229, 0.1);
+        border-top-color: #4f46e5;
+        animation: spin 1s linear infinite;
+        margin-bottom: 20px;
+      }
+      
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+      
+      .app-name {
+        font-size: 24px;
+        font-weight: 600;
+        color: #111827;
+        margin-bottom: 8px;
+      }
+      
+      .loading-text {
+        font-size: 16px;
+        color: #6b7280;
+      }
+      
+      /* Disable pull-to-refresh on mobile */
+      html, body {
+        overscroll-behavior-y: contain;
+      }
+      
+      /* Remove tap highlight on mobile */
+      * {
+        -webkit-tap-highlight-color: transparent;
+      }
+    </style>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
-    <div id="root"></div>
-    <!--
-      This HTML file is a template.
-      If you open it directly in the browser, you will see an empty page.
-
-      To begin the development, run `npm start` or `yarn start`.
-      To create a production bundle, use `npm run build` or `yarn build`.
-    -->
+    <div id="root">
+      <!-- Loading indicator shown until app loads -->
+      <div id="loading-container">
+        <div class="spinner"></div>
+        <div class="app-name">Rai Guest House</div>
+        <div class="loading-text">Loading admin panel...</div>
+      </div>
+    </div>
+    
+    <!-- Offline notification will be inserted here by the service worker -->
+    <div id="offline-notification" style="display: none; position: fixed; bottom: 0; left: 0; right: 0; background-color: #f44336; color: white; text-align: center; padding: 10px; z-index: 9999;">
+      You are currently offline. Some features may be limited.
+    </div>
+    
+    <script>
+      // Check if the browser is online and update the offline notification accordingly
+      function updateOnlineStatus() {
+        const notification = document.getElementById('offline-notification');
+        if (navigator.onLine) {
+          notification.style.display = 'none';
+        } else {
+          notification.style.display = 'block';
+        }
+      }
+      
+      window.addEventListener('online', updateOnlineStatus);
+      window.addEventListener('offline', updateOnlineStatus);
+      
+      // Initial check
+      updateOnlineStatus();
+      
+      // Prevent pinch-to-zoom on iOS
+      document.addEventListener('gesturestart', function(e) {
+        e.preventDefault();
+      });
+      
+      // Update height for mobile browsers with dynamic toolbars
+      const updateHeight = () => {
+        const vh = window.innerHeight * 0.01;
+        document.documentElement.style.setProperty('--vh', `${vh}px`);
+      };
+      
+      window.addEventListener('resize', updateHeight);
+      updateHeight();
+    </script>
   </body>
 </html>

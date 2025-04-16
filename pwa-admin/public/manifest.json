@@ -10,37 +10,72 @@
     {
       "src": "logo192.png",
       "type": "image/png",
-      "sizes": "192x192"
+      "sizes": "192x192",
+      "purpose": "any maskable"
     },
     {
       "src": "logo512.png",
       "type": "image/png",
-      "sizes": "512x512"
-    },
-    {
-      "src": "maskable_icon.png",
-      "type": "image/png",
       "sizes": "512x512",
-      "purpose": "maskable"
+      "purpose": "any maskable"
     }
   ],
   "start_url": ".",
   "display": "standalone",
+  "orientation": "portrait",
   "theme_color": "#4f46e5",
   "background_color": "#ffffff",
-  "orientation": "portrait",
-  "categories": ["business", "productivity"],
-  "description": "Admin panel for Rai Guest House orders and management",
-  "gcm_sender_id": "103953800507",
-  "related_applications": [],
-  "prefer_related_applications": false,
+  "description": "Admin panel for Rai Guest House with real-time order notifications",
   "shortcuts": [
     {
-      "name": "New Orders",
+      "name": "View Orders",
       "short_name": "Orders",
-      "description": "View new orders",
+      "description": "View and manage all orders",
       "url": "/orders",
-      "icons": [{ "src": "order_icon.png", "sizes": "192x192" }]
+      "icons": [{ "src": "shortcut-orders-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Change Settings",
+      "short_name": "Settings",
+      "description": "Adjust app settings",
+      "url": "/settings",
+      "icons": [{ "src": "shortcut-settings-192.png", "sizes": "192x192" }]
     }
-  ]
+  ],
+  "screenshots": [
+    {
+      "src": "screenshot1.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "platform": "wide",
+      "label": "Dashboard showing orders and statistics"
+    },
+    {
+      "src": "screenshot2.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "platform": "wide",
+      "label": "Orders management interface"
+    },
+    {
+      "src": "screenshot3.png",
+      "sizes": "640x1280",
+      "type": "image/png",
+      "platform": "narrow",
+      "label": "Mobile view of dashboard"
+    },
+    {
+      "src": "screenshot4.png",
+      "sizes": "640x1280",
+      "type": "image/png",
+      "platform": "narrow",
+      "label": "Mobile view of orders list"
+    }
+  ],
+  "categories": ["business", "productivity"],
+  "lang": "en-US",
+  "dir": "ltr",
+  "prefer_related_applications": false,
+  "related_applications": [],
+  "iarc_rating_id": ""
 }

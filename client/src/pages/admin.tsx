@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
-import { useMenuItems, useOrders, useTourismPlaces, useBulkSettings } from "@/hooks/use-api";
+import { useQueryClient } from "@tanstack/react-query";
+import { useMenuItems, useOrders, useTourismPlaces, useBulkSettings, useAdminUsers } from "@/hooks/use-api";
 import { useWebSocket } from "@/hooks/use-websocket";
 import { MENU_CATEGORIES, TOURISM_TAGS, ORDER_STATUS_OPTIONS } from "@/config/constants";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
 import { formatPrice, formatDate } from "@/lib/utils";
-import { MenuItem, Order, TourismPlace } from "@/types";
+import { MenuItem, Order, TourismPlace, AdminUser, ActivityLog } from "@/types";
 import { AdminLogin } from "@/components/admin-login";
 
 import { 
@@ -148,6 +149,7 @@ const themeSettingsSchema = z.object({
 // Main component
 export default function Admin() {
   const { user, isAuthenticated, logout } = useAuth();
+  const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState("dashboard");
   const [searchQuery, setSearchQuery] = useState("");
   
@@ -407,8 +409,9 @@ export default function Admin() {
   const fetchActivityLogs = async () => {
     setLoadingLogs(true);
     try {
-      const logs = await getActivityLogs();
-      setActivityLogs(logs || []);
+      await getActivityLogs();
+      const logsData = queryClient.getQueryData<ActivityLog[]>(['/api/activity-logs']) || [];
+      setActivityLogs(logsData);
     } catch (error) {
       console.error("Error fetching activity logs:", error);
       toast({

@@ -6,6 +6,34 @@ import { useToast } from "@/hooks/use-toast";
 // Replace this URL with your deployed Apps Script Web App URL
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/YOUR_DEPLOYED_SCRIPT_ID/exec";
 
+// Google Sheets API configuration
+const SHEETS_API_BASE_URL = "https://sheets.googleapis.com/v4/spreadsheets";
+const API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
+
+// Helper functions to get spreadsheet IDs
+const getMenuSpreadsheetId = () => import.meta.env.VITE_MENU_SPREADSHEET_ID || 
+  (localStorage.getItem("adminSettings") ? 
+    JSON.parse(localStorage.getItem("adminSettings") || "{}")?.menuSpreadsheetId : null);
+
+const getOrdersSpreadsheetId = () => import.meta.env.VITE_ORDERS_SPREADSHEET_ID || 
+  (localStorage.getItem("adminSettings") ? 
+    JSON.parse(localStorage.getItem("adminSettings") || "{}")?.ordersSpreadsheetId : null);
+
+const getTourismSpreadsheetId = () => import.meta.env.VITE_TOURISM_SPREADSHEET_ID || 
+  (localStorage.getItem("adminSettings") ? 
+    JSON.parse(localStorage.getItem("adminSettings") || "{}")?.tourismSpreadsheetId : null);
+
+// Helper function to get sheet ID
+const getSheetId = (type: string) => {
+  if (localStorage.getItem("adminSettings")) {
+    const settings = JSON.parse(localStorage.getItem("adminSettings") || "{}");
+    if (type === "menu" && settings.menuSheetId) return settings.menuSheetId;
+    if (type === "orders" && settings.ordersSheetId) return settings.ordersSheetId;
+    if (type === "tourism" && settings.tourismSheetId) return settings.tourismSheetId;
+  }
+  return "1"; // Default to sheet 1
+};
+
 // Fallback to direct Google Sheets API if Apps Script deployment is not yet set up
 const getScriptUrl = () => {
   return localStorage.getItem("adminSettings")
@@ -365,7 +393,7 @@ export function useOrders() {
         // Apply filter if provided
         if (filterBy) {
           fetchedOrders = fetchedOrders.filter(
-            order => order.roomNumber === filterBy || order.mobileNumber === filterBy
+            (order: Order) => order.roomNumber === filterBy || order.mobileNumber === filterBy
           );
         }
         

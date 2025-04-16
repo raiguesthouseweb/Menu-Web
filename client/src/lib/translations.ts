@@ -30,6 +30,20 @@ export type TranslationKey =
   | 'common.settled'
   | 'common.invoice'
   | 'common.invoices'
+  | 'common.resetCart'
+  | 'common.contactUs'
+  | 'common.paymentMethod'
+  | 'common.enterPassword'
+  | 'common.confirm'
+  | 'common.remarks'
+  | 'common.cash'
+  | 'common.upi'
+  | 'common.card'
+  | 'common.other'
+  | 'common.close'
+  | 'common.send'
+  | 'common.yes'
+  | 'common.no'
   
   // Home page
   | 'home.welcome'
@@ -39,6 +53,13 @@ export type TranslationKey =
   | 'home.features.menu'
   | 'home.features.tourism'
   | 'home.features.order'
+  | 'home.announcement'
+  | 'home.contactUs'
+  | 'home.contactUsTitle'
+  | 'home.contactUsDescription'
+  | 'home.contactUsAddress'
+  | 'home.contactUsPhone'
+  | 'home.contactUsEmail'
   
   // Menu page
   | 'menu.title'
@@ -47,6 +68,9 @@ export type TranslationKey =
   | 'menu.roomNumber'
   | 'menu.mobileNumber'
   | 'menu.orderSuccess'
+  | 'menu.resetCart'
+  | 'menu.resetCartConfirm'
+  | 'menu.quantity'
   
   // Order Status page
   | 'orderStatus.title'
@@ -56,6 +80,8 @@ export type TranslationKey =
   | 'orderStatus.preparingStatus'
   | 'orderStatus.deliveredStatus'
   | 'orderStatus.orderNotFound'
+  | 'orderStatus.orderItems'
+  | 'orderStatus.orderDate'
   
   // Tourism page
   | 'tourism.title'
@@ -74,6 +100,8 @@ export type TranslationKey =
   | 'tourism.places.kalbhairav.description'
   | 'tourism.places.ramghat.title'
   | 'tourism.places.ramghat.description'
+  | 'tourism.loadingPhotos'
+  | 'tourism.noPhotosAvailable'
   
   // Invoice page
   | 'invoice.title'
@@ -83,6 +111,13 @@ export type TranslationKey =
   | 'invoice.viewDetails'
   | 'invoice.settlePayment'
   | 'invoice.paymentStatus'
+  | 'invoice.purchasePrice'
+  | 'invoice.profit'
+  | 'invoice.restaurantPaid'
+  | 'invoice.markAsPaid'
+  | 'invoice.paymentMethod'
+  | 'invoice.confirmSettlement'
+  | 'invoice.paymentRemarks'
   
   // Admin page
   | 'admin.title'
@@ -100,7 +135,23 @@ export type TranslationKey =
   | 'admin.exportSettings'
   | 'admin.exportLimit'
   | 'admin.orderLimitDays'
-  | 'admin.orderLimitCount';
+  | 'admin.orderLimitCount'
+  | 'admin.userAccounts'
+  | 'admin.addUser'
+  | 'admin.userName'
+  | 'admin.password'
+  | 'admin.activityLog'
+  | 'admin.action'
+  | 'admin.timestamp'
+  | 'admin.user'
+  | 'admin.details'
+  | 'admin.purchasePrice'
+  | 'admin.confirmPassword'
+  | 'admin.colorPalette'
+  | 'admin.animationSpeed'
+  | 'admin.fontOptions'
+  | 'admin.contactSection'
+  | 'admin.promotionalMessage';
 
 // Primary language is English
 const en: Record<TranslationKey, string> = {
@@ -134,6 +185,20 @@ const en: Record<TranslationKey, string> = {
   'common.settled': 'Payment Settled',
   'common.invoice': 'Invoice',
   'common.invoices': 'Invoices',
+  'common.resetCart': 'Reset Cart',
+  'common.contactUs': 'Contact Us',
+  'common.paymentMethod': 'Payment Method',
+  'common.enterPassword': 'Enter Password',
+  'common.confirm': 'Confirm',
+  'common.remarks': 'Remarks',
+  'common.cash': 'Cash',
+  'common.upi': 'UPI',
+  'common.card': 'Card',
+  'common.other': 'Other',
+  'common.close': 'Close',
+  'common.send': 'Send',
+  'common.yes': 'Yes',
+  'common.no': 'No',
   
   'home.welcome': 'Welcome to Rai Guest House',
   'home.subtitle': 'Experience comfort and excellent service during your stay',
@@ -142,6 +207,13 @@ const en: Record<TranslationKey, string> = {
   'home.features.menu': 'Delicious food delivered to your room',
   'home.features.tourism': 'Explore the beautiful city of Ujjain',
   'home.features.order': 'Track your food order in real-time',
+  'home.announcement': 'Special Announcement',
+  'home.contactUs': 'Contact Us',
+  'home.contactUsTitle': 'Get in Touch',
+  'home.contactUsDescription': 'We are here to help you with any queries or concerns',
+  'home.contactUsAddress': 'Address',
+  'home.contactUsPhone': 'Phone',
+  'home.contactUsEmail': 'Email',
   
   'menu.title': 'Our Menu',
   'menu.emptyCart': 'Your cart is empty',
@@ -149,6 +221,9 @@ const en: Record<TranslationKey, string> = {
   'menu.roomNumber': 'Room Number',
   'menu.mobileNumber': 'Mobile Number',
   'menu.orderSuccess': 'Your order has been placed successfully',
+  'menu.resetCart': 'Reset Cart',
+  'menu.resetCartConfirm': 'Are you sure you want to empty your cart?',
+  'menu.quantity': 'Quantity',
   
   'orderStatus.title': 'Check Order Status',
   'orderStatus.checkStatus': 'Check Status',
@@ -157,6 +232,8 @@ const en: Record<TranslationKey, string> = {
   'orderStatus.preparingStatus': 'Preparing',
   'orderStatus.deliveredStatus': 'Delivered',
   'orderStatus.orderNotFound': 'No orders found with the provided details',
+  'orderStatus.orderItems': 'Order Items',
+  'orderStatus.orderDate': 'Order Date',
   
   'tourism.title': 'Explore Ujjain',
   'tourism.distance': 'Distance from Guest House',
@@ -174,7 +251,9 @@ const en: Record<TranslationKey, string> = {
   'tourism.places.kalbhairav.description': 'Ancient temple dedicated to Bhairava, a fierce manifestation of Lord Shiva.',
   'tourism.places.ramghat.title': 'Ram Ghat',
   'tourism.places.ramghat.description': 'One of the most pristine ghats on the Shipra River, perfect for sunrise and sunset views.',
-
+  'tourism.loadingPhotos': 'Loading photos...',
+  'tourism.noPhotosAvailable': 'No photos available',
+  
   'invoice.title': 'Invoices',
   'invoice.totalAmount': 'Total Amount',
   'invoice.roomNumber': 'Room Number',
@@ -182,6 +261,13 @@ const en: Record<TranslationKey, string> = {
   'invoice.viewDetails': 'View Details',
   'invoice.settlePayment': 'Settle Payment',
   'invoice.paymentStatus': 'Payment Status',
+  'invoice.purchasePrice': 'Purchase Price',
+  'invoice.profit': 'Profit',
+  'invoice.restaurantPaid': 'Restaurant Paid',
+  'invoice.markAsPaid': 'Mark as Paid',
+  'invoice.paymentMethod': 'Payment Method',
+  'invoice.confirmSettlement': 'Confirm Settlement',
+  'invoice.paymentRemarks': 'Payment Remarks',
   
   'admin.title': 'Admin Panel',
   'admin.dashboard': 'Dashboard',
@@ -198,7 +284,23 @@ const en: Record<TranslationKey, string> = {
   'admin.exportSettings': 'Export Settings',
   'admin.exportLimit': 'Set order history limit',
   'admin.orderLimitDays': 'Day limit',
-  'admin.orderLimitCount': 'Order count limit'
+  'admin.orderLimitCount': 'Order count limit',
+  'admin.userAccounts': 'User Accounts',
+  'admin.addUser': 'Add User',
+  'admin.userName': 'Username',
+  'admin.password': 'Password',
+  'admin.activityLog': 'Activity Log',
+  'admin.action': 'Action',
+  'admin.timestamp': 'Timestamp',
+  'admin.user': 'User',
+  'admin.details': 'Details',
+  'admin.purchasePrice': 'Purchase Price',
+  'admin.confirmPassword': 'Confirm Password',
+  'admin.colorPalette': 'Color Palette',
+  'admin.animationSpeed': 'Animation Speed',
+  'admin.fontOptions': 'Font Options',
+  'admin.contactSection': 'Contact Section',
+  'admin.promotionalMessage': 'Promotional Message'
 };
 
 // Hindi translations

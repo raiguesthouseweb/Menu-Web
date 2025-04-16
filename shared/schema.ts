@@ -42,6 +42,7 @@ export const tourismPlaces = pgTable("tourism_places", {
   distance: text("distance").notNull(),
   tags: text("tags").array().notNull(),
   mapsLink: text("maps_link").notNull(),
+  photoLinks: text("photo_links").array(),
 });
 
 // Admin Settings Schema
@@ -89,6 +90,7 @@ export const insertTourismPlaceSchema = createInsertSchema(tourismPlaces).pick({
   distance: true,
   tags: true,
   mapsLink: true,
+  photoLinks: true,
 });
 
 export const insertAdminSettingSchema = createInsertSchema(adminSettings).pick({

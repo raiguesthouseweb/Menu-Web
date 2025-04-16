@@ -291,7 +291,11 @@ export class MemStorage implements IStorage {
   
   async createTourismPlace(place: InsertTourismPlace): Promise<TourismPlace> {
     const id = this.tourismPlaceCurrentId++;
-    const tourismPlace: TourismPlace = { ...place, id };
+    const tourismPlace: TourismPlace = { 
+      ...place, 
+      id,
+      photoLinks: place.photoLinks || []
+    };
     this.tourismPlaces.set(id, tourismPlace);
     return tourismPlace;
   }

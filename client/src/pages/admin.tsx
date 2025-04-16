@@ -168,6 +168,15 @@ export default function Admin() {
   const [orderAlertSound, setOrderAlertSound] = useState(true);
   const [whatsappAlerts, setWhatsappAlerts] = useState(false);
   
+  // QR Code generator state
+  const [qrRoomNumber, setQrRoomNumber] = useState("");
+  const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(null);
+  
+  // Events calendar state
+  const [calendarId, setCalendarId] = useState("");
+  const [showEventsCalendar, setShowEventsCalendar] = useState(false);
+  const [calendarEvents, setCalendarEvents] = useState<any[]>([]);
+  
   // Theme preview
   const [isDarkMode, setIsDarkMode] = useState(false);
   
@@ -600,6 +609,71 @@ export default function Admin() {
       title: "Settings updated",
       description: "Your general settings have been saved",
     });
+  };
+  
+  // QR Code generator functions
+  const generateQrCode = () => {
+    if (!qrRoomNumber) return;
+    
+    // Create URL with room number parameter
+    const baseUrl = window.location.origin;
+    const menuUrl = `${baseUrl}/menu?room=${qrRoomNumber}`;
+    
+    // Generate QR code using Google Charts API
+    const qrUrl = `https://chart.googleapis.com/chart?cht=qr&chs=300x300&chl=${encodeURIComponent(menuUrl)}&choe=UTF-8`;
+    setQrCodeUrl(qrUrl);
+    
+    toast({
+      title: "QR Code generated",
+      description: `QR code for Room ${qrRoomNumber} has been created`,
+    });
+  };
+  
+  const handlePrintQrCode = () => {
+    if (!qrCodeUrl) return;
+    
+    // Create a new window for printing
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) return;
+    
+    // Add content to the print window
+    printWindow.document.write(`
+      <html>
+        <head>
+          <title>QR Code - Room ${qrRoomNumber}</title>
+          <style>
+            body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+            img { max-width: 250px; margin: 20px auto; }
+            h2 { margin-bottom: 5px; }
+            p { margin-top: 5px; color: #555; }
+          </style>
+        </head>
+        <body>
+          <h2>Rai Guest House</h2>
+          <p>Scan to order food to your room</p>
+          <img src="${qrCodeUrl}" alt="QR Code for Room ${qrRoomNumber}" />
+          <p><strong>Room ${qrRoomNumber}</strong></p>
+        </body>
+      </html>
+    `);
+    
+    // Print and close
+    setTimeout(() => {
+      printWindow.print();
+      printWindow.close();
+    }, 250);
+  };
+  
+  const handleDownloadQrCode = () => {
+    if (!qrCodeUrl) return;
+    
+    // Create a temporary anchor element
+    const link = document.createElement('a');
+    link.href = qrCodeUrl;
+    link.download = `room-${qrRoomNumber}-qrcode.png`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
   
   // Filter orders based on search query
@@ -1874,7 +1948,70 @@ export default function Admin() {
                       <p className="text-sm text-gray-500 dark:text-gray-400 text-center">
                         Generate room-specific QR codes for easy ordering
                       </p>
-                      <Button variant="outline" className="w-full mt-4">Generate</Button>
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Button variant="outline" className="w-full mt-4">Generate</Button>
+                        </DialogTrigger>
+                        <DialogContent className="sm:max-w-[500px]">
+                          <DialogHeader>
+                            <DialogTitle>QR Code Generator</DialogTitle>
+                            <DialogDescription>
+                              Create QR codes for each room. Guests can scan these to quickly place orders.
+                            </DialogDescription>
+                          </DialogHeader>
+                          
+                          <div className="space-y-4 py-4">
+                            <div className="flex items-center gap-4">
+                              <div className="flex-1">
+                                <Label htmlFor="roomNumber">Room Number</Label>
+                                <Input 
+                                  id="roomNumber" 
+                                  placeholder="e.g. 101" 
+                                  className="mt-1"
+                                  value={qrRoomNumber}
+                                  onChange={(e) => setQrRoomNumber(e.target.value)}
+                                />
+                              </div>
+                              <Button 
+                                onClick={generateQrCode} 
+                                disabled={!qrRoomNumber}
+                                className="mt-7"
+                              >
+                                Generate
+                              </Button>
+                            </div>
+                            
+                            {qrCodeUrl && (
+                              <div className="bg-white p-4 rounded-md flex flex-col items-center">
+                                <img 
+                                  src={qrCodeUrl} 
+                                  alt={`QR Code for Room ${qrRoomNumber}`} 
+                                  className="w-48 h-48 mb-4"
+                                />
+                                <p className="text-center text-sm text-gray-500 mb-2">
+                                  Room {qrRoomNumber}
+                                </p>
+                                <div className="flex gap-2">
+                                  <Button 
+                                    variant="outline" 
+                                    size="sm"
+                                    onClick={handlePrintQrCode}
+                                  >
+                                    Print
+                                  </Button>
+                                  <Button 
+                                    variant="outline" 
+                                    size="sm"
+                                    onClick={handleDownloadQrCode}
+                                  >
+                                    Download
+                                  </Button>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </DialogContent>
+                      </Dialog>
                     </CardContent>
                   </Card>
                 </div>

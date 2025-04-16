@@ -202,17 +202,17 @@ export default function Menu() {
                     open={expandedCategories[category]}
                     onOpenChange={() => toggleCategory(category)}
                   >
-                    <div className="flex items-center justify-between">
-                      <h3 className="text-xl font-semibold text-primary">{category}</h3>
-                      <CollapsibleTrigger asChild>
-                        <Button variant="ghost" size="sm" className="w-9 p-0">
+                    <CollapsibleTrigger asChild>
+                      <div className="flex items-center justify-between cursor-pointer py-2 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md transition-colors">
+                        <h3 className="text-xl font-semibold text-primary ml-2">{category}</h3>
+                        <div className="w-9 flex items-center justify-center">
                           {expandedCategories[category] ? 
                             <ChevronDown className="h-4 w-4" /> : 
                             <ChevronRight className="h-4 w-4" />
                           }
-                        </Button>
-                      </CollapsibleTrigger>
-                    </div>
+                        </div>
+                      </div>
+                    </CollapsibleTrigger>
                     <CollapsibleContent className="mt-3">
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         {categoryItems.map((item) => (

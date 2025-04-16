@@ -105,6 +105,7 @@ export function useMenuItems() {
         if (!isValidSpreadsheetId(spreadsheetId) || !API_KEY) {
           console.warn("Invalid spreadsheet ID or missing API key. Using default menu data.");
           setMenuItems(DEFAULT_MENU_ITEMS);
+          setLoading(false);
           return;
         }
         
@@ -201,6 +202,7 @@ export function useTourismPlaces() {
         if (!isValidSpreadsheetId(spreadsheetId) || !API_KEY) {
           console.warn("Invalid tourism spreadsheet ID or missing API key. Using default tourism data.");
           setTourismPlaces(DEFAULT_TOURISM_PLACES);
+          setLoading(false);
           return;
         }
         
@@ -314,6 +316,7 @@ export function useOrders() {
         } else {
           setOrders([]);
         }
+        setLoading(false);
         return;
       }
       
@@ -362,6 +365,7 @@ export function useOrders() {
           } else {
             setOrders([]);
           }
+          setLoading(false);
           return;
         }
         

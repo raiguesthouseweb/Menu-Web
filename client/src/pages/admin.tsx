@@ -144,8 +144,6 @@ export default function Admin() {
   const [searchQuery, setSearchQuery] = useState("");
   
   // State for sheet configurations
-  const [menuSpreadsheetId, setMenuSpreadsheetId] = useState(import.meta.env.VITE_MENU_SPREADSHEET_ID || "");
-  const [menuSheetId, setMenuSheetId] = useState("0");
   const [ordersSpreadsheetId, setOrdersSpreadsheetId] = useState(import.meta.env.VITE_ORDERS_SPREADSHEET_ID || "");
   const [ordersSheetId, setOrdersSheetId] = useState("0");
   const [tourismSpreadsheetId, setTourismSpreadsheetId] = useState(import.meta.env.VITE_TOURISM_SPREADSHEET_ID || "");
@@ -309,8 +307,6 @@ export default function Admin() {
         const settings = JSON.parse(savedSettings);
         
         // Sheet configs
-        if (settings.menuSpreadsheetId) setMenuSpreadsheetId(settings.menuSpreadsheetId);
-        if (settings.menuSheetId) setMenuSheetId(settings.menuSheetId);
         if (settings.ordersSpreadsheetId) setOrdersSpreadsheetId(settings.ordersSpreadsheetId);
         if (settings.ordersSheetId) setOrdersSheetId(settings.ordersSheetId);
         if (settings.tourismSpreadsheetId) setTourismSpreadsheetId(settings.tourismSpreadsheetId);
@@ -425,8 +421,6 @@ export default function Admin() {
   
   const saveSheetSettings = (data: z.infer<typeof sheetsConfigSchema>) => {
     // Update state
-    setMenuSpreadsheetId(data.menuSpreadsheetId);
-    setMenuSheetId(data.menuSheetId);
     setOrdersSpreadsheetId(data.ordersSpreadsheetId);
     setOrdersSheetId(data.ordersSheetId);
     setTourismSpreadsheetId(data.tourismSpreadsheetId);
@@ -435,8 +429,6 @@ export default function Admin() {
     // Save to localStorage
     const settings = {
       ...JSON.parse(localStorage.getItem("adminSettings") || "{}"),
-      menuSpreadsheetId: data.menuSpreadsheetId,
-      menuSheetId: data.menuSheetId,
       ordersSpreadsheetId: data.ordersSpreadsheetId,
       ordersSheetId: data.ordersSheetId,
       tourismSpreadsheetId: data.tourismSpreadsheetId,

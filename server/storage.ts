@@ -146,21 +146,33 @@ export class MemStorage implements IStorage {
         description: "One of the twelve Jyotirlingas, the most sacred abodes of Lord Shiva.", 
         distance: "4.2 km",
         tags: ["Religious", "Heritage"],
-        mapsLink: "https://maps.google.com/?q=Mahakaleshwar+Temple+Ujjain"
+        mapsLink: "https://maps.google.com/?q=Mahakaleshwar+Temple+Ujjain",
+        photoLinks: [
+          "https://drive.google.com/uc?id=1A1B2C3D4E5F6G7H",
+          "https://drive.google.com/uc?id=2B3C4D5E6F7G8H9"
+        ]
       },
       { 
         title: "Kal Bhairav Temple", 
         description: "Ancient temple dedicated to Bhairava, a fierce manifestation of Lord Shiva.", 
         distance: "3.5 km",
         tags: ["Religious"],
-        mapsLink: "https://maps.google.com/?q=Kal+Bhairav+Temple+Ujjain"
+        mapsLink: "https://maps.google.com/?q=Kal+Bhairav+Temple+Ujjain",
+        photoLinks: [
+          "https://drive.google.com/uc?id=3C4D5E6F7G8H9I0",
+          "https://drive.google.com/uc?id=4D5E6F7G8H9I0J1"
+        ]
       },
       { 
         title: "Ram Ghat", 
         description: "One of the most pristine ghats on the Shipra River, perfect for sunrise and sunset views.", 
         distance: "2.8 km",
         tags: ["Religious", "Romantic"],
-        mapsLink: "https://maps.google.com/?q=Ram+Ghat+Ujjain"
+        mapsLink: "https://maps.google.com/?q=Ram+Ghat+Ujjain",
+        photoLinks: [
+          "https://drive.google.com/uc?id=5E6F7G8H9I0J1K2",
+          "https://drive.google.com/uc?id=6F7G8H9I0J1K2L3"
+        ]
       },
     ];
     

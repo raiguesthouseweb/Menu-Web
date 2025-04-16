@@ -149,17 +149,20 @@ export default function Tourism() {
                       </DialogHeader>
                       
                       {/* Photo carousel */}
-                      {place.photos && place.photos.length > 0 && (
+                      {place.photoLinks && place.photoLinks.length > 0 ? (
                         <div className="relative mt-4 mb-6 overflow-hidden rounded-md bg-gray-100 dark:bg-gray-800">
                           <div className="aspect-video relative flex items-center justify-center">
                             <img 
-                              src={place.photos[selectedPhotoIndex]} 
+                              src={place.photoLinks[selectedPhotoIndex]} 
                               alt={place.title} 
                               className="object-cover rounded-md max-h-[300px] w-auto"
+                              onError={(e) => {
+                                (e.target as HTMLImageElement).src = 'https://via.placeholder.com/300x200?text=Image+Not+Available';
+                              }}
                             />
                             
                             {/* Photo navigation */}
-                            {place.photos.length > 1 && (
+                            {place.photoLinks.length > 1 && (
                               <>
                                 <Button 
                                   variant="outline" 
@@ -168,7 +171,7 @@ export default function Tourism() {
                                   onClick={(e) => {
                                     e.stopPropagation();
                                     setSelectedPhotoIndex(prev => 
-                                      prev === 0 ? place.photos!.length - 1 : prev - 1
+                                      prev === 0 ? place.photoLinks!.length - 1 : prev - 1
                                     );
                                   }}
                                 >
@@ -181,7 +184,7 @@ export default function Tourism() {
                                   onClick={(e) => {
                                     e.stopPropagation();
                                     setSelectedPhotoIndex(prev => 
-                                      prev === place.photos!.length - 1 ? 0 : prev + 1
+                                      prev === place.photoLinks!.length - 1 ? 0 : prev + 1
                                     );
                                   }}
                                 >
@@ -190,11 +193,17 @@ export default function Tourism() {
                                 
                                 {/* Photo counter */}
                                 <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 bg-black/50 text-white text-sm px-2 py-1 rounded">
-                                  {selectedPhotoIndex + 1} / {place.photos.length}
+                                  {selectedPhotoIndex + 1} / {place.photoLinks.length}
                                 </div>
                               </>
                             )}
                           </div>
+                        </div>
+                      ) : (
+                        <div className="flex justify-center items-center py-6 bg-gray-100 dark:bg-gray-800 rounded-md mb-6">
+                          <p className="text-gray-500 dark:text-gray-400">
+                            {t('tourism.noPhotosAvailable')}
+                          </p>
                         </div>
                       )}
                       
@@ -245,7 +254,7 @@ export default function Tourism() {
                   </div>
                   
                   <div className="flex gap-2 mt-4">
-                    {place.photos && place.photos.length > 0 && (
+                    {place.photoLinks && place.photoLinks.length > 0 && (
                       <Button
                         variant="outline"
                         className="flex-1"

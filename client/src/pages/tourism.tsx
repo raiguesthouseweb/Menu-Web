@@ -107,7 +107,7 @@ export default function Tourism() {
                   
                   <div className="flex items-center text-sm text-gray-500 dark:text-gray-400 mb-3">
                     <MapPin className="h-4 w-4 mr-1" />
-                    <span>{place.distance}</span>
+                    <span>{t('tourism.distance')}: {place.distance}</span>
                     
                     <div className="ml-auto flex flex-wrap gap-1">
                       {place.tags.map(tag => (
@@ -124,7 +124,7 @@ export default function Tourism() {
                     onClick={() => window.open(place.mapsLink, "_blank")}
                   >
                     <MapPin className="h-4 w-4 mr-2" />
-                    View on Map
+                    {t('tourism.viewMap')}
                     <ExternalLink className="h-3 w-3 ml-2" />
                   </Button>
                 </CardContent>

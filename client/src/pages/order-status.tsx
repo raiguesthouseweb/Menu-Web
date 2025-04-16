@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
-import { useOrders } from "@/hooks/use-google-sheets";
+import { useOrders } from "@/hooks/use-api";
 import { formatPrice, formatDate } from "@/lib/utils";
+import { useLanguage } from "@/hooks/use-language";
+import { useTranslation } from "@/lib/translations";
 
 import { 
   Card,
@@ -22,7 +24,9 @@ import {
 
 export default function OrderStatus() {
   const [query, setQuery] = useState("");
-  const { orders, loading, error, fetchOrders } = useOrders();
+  const { orders, loading, error, refetch } = useOrders(query);
+  const { language } = useLanguage();
+  const t = useTranslation(language);
   
   // Update page title
   useEffect(() => {
@@ -34,16 +38,12 @@ export default function OrderStatus() {
     
     if (roomParam) {
       setQuery(roomParam);
-      fetchOrders(roomParam);
-    } else {
-      // Load all orders if no specific room is provided
-      fetchOrders();
     }
-  }, [fetchOrders]);
+  }, []);
   
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    fetchOrders(query);
+    refetch();
   };
 
   const getStatusColor = (status: string) => {
@@ -118,7 +118,7 @@ export default function OrderStatus() {
               Error Loading Orders
             </h3>
             <p className="text-red-700 dark:text-red-400">
-              {error}
+              {error instanceof Error ? error.message : String(error)}
             </p>
           </CardContent>
         </Card>

@@ -57,15 +57,26 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const addItem = (item: MenuItem) => {
     setItems(prevItems => {
-      const existingItem = prevItems.find(i => i.id === item.id);
+      const existingItem = prevItems.find(i => i.menuItemId === item.id);
       if (existingItem) {
         return prevItems.map(i => 
-          i.id === item.id 
+          i.menuItemId === item.id 
             ? { ...i, quantity: i.quantity + 1 } 
             : i
         );
       } else {
-        return [...prevItems, { ...item, quantity: 1 }];
+        // Create a new OrderItem with the required structure
+        const orderItem: OrderItem = {
+          id: Math.floor(Math.random() * 1000000), // Generate a unique ID for this order item
+          menuItemId: item.id,
+          name: item.name,
+          price: item.price,
+          purchasePrice: item.purchasePrice,
+          category: item.category,
+          details: item.details,
+          quantity: 1
+        };
+        return [...prevItems, orderItem];
       }
     });
   };

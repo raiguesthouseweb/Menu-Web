@@ -61,6 +61,7 @@ export type TranslationKey =
   | 'tourism.title'
   | 'tourism.distance'
   | 'tourism.viewMap'
+  | 'tourism.viewPhotos'
   | 'tourism.filter.all'
   | 'tourism.filter.religious'
   | 'tourism.filter.heritage'

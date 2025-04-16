@@ -84,7 +84,9 @@ import {
   QrCode,
   MessageSquare,
   Calendar,
-  Upload
+  Upload,
+  Play,
+  Ban
 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";

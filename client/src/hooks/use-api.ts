@@ -12,18 +12,8 @@ export function useMenuItems() {
     data: menuItems = [], 
     isLoading: loading, 
     error 
-  } = useQuery({
-    queryKey: ['/api/menu'],
-    meta: {
-      errorHandler: (error: unknown) => {
-        const err = error as Error;
-        toast({
-          title: "Error loading menu items",
-          description: err.message || "Unknown error occurred",
-          variant: "destructive",
-        });
-      }
-    }
+  } = useQuery<MenuItem[]>({
+    queryKey: ['/api/menu']
   });
 
   const queryClient = useQueryClient();
@@ -108,16 +98,8 @@ export function useTourismPlaces() {
     data: tourismPlaces = [], 
     isLoading: loading, 
     error 
-  } = useQuery({
-    queryKey: ['/api/tourism'],
-    onError: (error: unknown) => {
-      const err = error as Error;
-      toast({
-        title: "Error loading tourism places",
-        description: err instanceof Error ? err.message : "Unknown error occurred",
-        variant: "destructive",
-      });
-    }
+  } = useQuery<TourismPlace[]>({
+    queryKey: ['/api/tourism']
   });
 
   const queryClient = useQueryClient();
@@ -207,16 +189,8 @@ export function useOrders(filterBy?: string) {
     isLoading: loading, 
     error,
     refetch 
-  } = useQuery({
-    queryKey,
-    onError: (error: unknown) => {
-      const err = error as Error;
-      toast({
-        title: "Error loading orders",
-        description: err instanceof Error ? err.message : "Unknown error occurred",
-        variant: "destructive",
-      });
-    }
+  } = useQuery<Order[]>({
+    queryKey
   });
 
   const queryClient = useQueryClient();
@@ -304,18 +278,7 @@ export function useAdminSettings(key: string) {
     isLoading: loading, 
     error 
   } = useQuery({
-    queryKey: [`/api/settings/${key}`],
-    onError: (error: unknown) => {
-      const err = error as Error;
-      // Don't show toast on 404 - it's normal for settings not to exist yet
-      if (err instanceof Error && !err.message.includes("404")) {
-        toast({
-          title: "Error loading setting",
-          description: err.message,
-          variant: "destructive",
-        });
-      }
-    }
+    queryKey: [`/api/settings/${key}`]
   });
 
   const queryClient = useQueryClient();

@@ -1441,6 +1441,35 @@ export default function Admin() {
                                 </FormItem>
                               )}
                             />
+                            
+                            <FormField
+                              control={tourismPlaceForm.control}
+                              name="photoLinks"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Photo Links</FormLabel>
+                                  <FormDescription>
+                                    Enter Google Drive photo links, one per line
+                                  </FormDescription>
+                                  <FormControl>
+                                    <Textarea 
+                                      placeholder="https://drive.google.com/uc?id=..." 
+                                      {...field} 
+                                      value={field.value?.join('\n') || ''} 
+                                      onChange={(e) => {
+                                        const links = e.target.value
+                                          .split('\n')
+                                          .map(link => link.trim())
+                                          .filter(link => link !== '');
+                                        field.onChange(links);
+                                      }}
+                                      rows={4}
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
                           </div>
                           
                           <FormField
@@ -1614,6 +1643,35 @@ export default function Admin() {
                                         )}
                                       />
                                     </div>
+                                    
+                                    <FormField
+                                      control={tourismPlaceForm.control}
+                                      name="photoLinks"
+                                      render={({ field }) => (
+                                        <FormItem>
+                                          <FormLabel>Photo Links</FormLabel>
+                                          <FormDescription>
+                                            Enter Google Drive photo links, one per line
+                                          </FormDescription>
+                                          <FormControl>
+                                            <Textarea 
+                                              placeholder="https://drive.google.com/uc?id=..." 
+                                              {...field} 
+                                              value={field.value?.join('\n') || ''} 
+                                              onChange={(e) => {
+                                                const links = e.target.value
+                                                  .split('\n')
+                                                  .map(link => link.trim())
+                                                  .filter(link => link !== '');
+                                                field.onChange(links);
+                                              }}
+                                              rows={4}
+                                            />
+                                          </FormControl>
+                                          <FormMessage />
+                                        </FormItem>
+                                      )}
+                                    />
                                     
                                     <FormField
                                       control={tourismPlaceForm.control}

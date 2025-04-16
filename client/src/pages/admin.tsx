@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useMenuItems, useOrders, useTourismPlaces } from "@/hooks/use-google-sheets";
+import { useMenuItems, useOrders, useTourismPlaces, useBulkSettings } from "@/hooks/use-api";
 import { ADMIN_PASSWORD, MENU_CATEGORIES, TOURISM_TAGS, ORDER_STATUS_OPTIONS } from "@/config/constants";
 import { useToast } from "@/hooks/use-toast";
 import { formatPrice, formatDate } from "@/lib/utils";
@@ -168,15 +168,29 @@ export default function Admin() {
   const [isDarkMode, setIsDarkMode] = useState(false);
   
   // Hooks for data fetching
-  const { menuItems, loading: loadingMenu, setMenuItems } = useMenuItems();
+  const { 
+    menuItems, 
+    loading: loadingMenu, 
+    addMenuItem, 
+    updateMenuItem,
+    deleteMenuItem 
+  } = useMenuItems();
+  
   const { 
     orders, 
     loading: loadingOrders, 
-    fetchOrders, 
-    updateOrderStatus,
-    addOrder 
+    updateOrderStatus: updateOrder,
+    placeOrder, 
+    refetch: fetchOrders 
   } = useOrders();
-  const { tourismPlaces, loading: loadingTourism } = useTourismPlaces();
+  
+  const { 
+    tourismPlaces, 
+    loading: loadingTourism,
+    addTourismPlace,
+    updateTourismPlace,
+    deleteTourismPlace
+  } = useTourismPlaces();
   const { toast } = useToast();
   
   // Forms
@@ -349,7 +363,7 @@ export default function Admin() {
   
   const handleStatusChange = async (orderId: number, newStatus: string) => {
     try {
-      await updateOrderStatus(orderId, newStatus);
+      await updateOrder({ id: orderId, status: newStatus });
       toast({
         title: "Order updated",
         description: `Order #${orderId} status changed to ${newStatus}`,
@@ -402,32 +416,17 @@ export default function Admin() {
         details: data.details
       };
       
-      // Update in state
-      setMenuItems(menuItems.map(item => 
-        item.id === editingMenuItem.id ? updatedItem : item
-      ));
+      // Use API to update
+      updateMenuItem(updatedItem);
       
-      toast({
-        title: "Menu item updated",
-        description: `"${data.name}" has been updated successfully`,
-      });
     } else {
-      // Add new item
-      const newItem: MenuItem = {
-        id: Date.now(),
+      // Add new item using API
+      addMenuItem({
         name: data.name,
         price: data.price,
         purchasePrice: data.purchasePrice,
         category: data.category,
         details: data.details
-      };
-      
-      // Add to state
-      setMenuItems([...menuItems, newItem]);
-      
-      toast({
-        title: "Menu item added",
-        description: `"${data.name}" has been added to the menu`,
       });
     }
     
@@ -437,28 +436,29 @@ export default function Admin() {
   };
   
   const handleDeleteMenuItem = (itemId: number) => {
-    // Filter out the item
-    setMenuItems(menuItems.filter(item => item.id !== itemId));
-    
-    toast({
-      title: "Menu item deleted",
-      description: "The item has been removed from the menu",
-    });
+    // Use API to delete the item
+    deleteMenuItem(itemId);
   };
   
   const handleSaveTourismPlace = (data: z.infer<typeof tourismPlaceSchema>) => {
     if (editingTourismPlace) {
-      // Existing tourism places from useTourismPlaces hook can't be directly modified
-      // In a real app, we would call an API to update the place
-      toast({
-        title: "Tourism place updated",
-        description: `"${data.title}" has been updated successfully`,
+      // Update using API
+      updateTourismPlace({
+        id: editingTourismPlace.id,
+        title: data.title,
+        description: data.description,
+        distance: data.distance,
+        tags: data.tags,
+        mapsLink: data.mapsLink,
       });
     } else {
-      // In a real app, we would call an API to add the place
-      toast({
-        title: "Tourism place added",
-        description: `"${data.title}" has been added successfully`,
+      // Add new place using API
+      addTourismPlace({
+        title: data.title,
+        description: data.description,
+        distance: data.distance,
+        tags: data.tags,
+        mapsLink: data.mapsLink,
       });
     }
     
@@ -468,11 +468,8 @@ export default function Admin() {
   };
   
   const handleDeleteTourismPlace = (placeId: number) => {
-    // In a real app, we would call an API to delete the place
-    toast({
-      title: "Tourism place deleted",
-      description: "The place has been removed successfully",
-    });
+    // Delete using API
+    deleteTourismPlace(placeId);
   };
   
   const handleChangePassword = (data: z.infer<typeof passwordChangeSchema>) => {

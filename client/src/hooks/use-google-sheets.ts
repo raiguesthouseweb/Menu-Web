@@ -15,14 +15,14 @@ const getScriptUrl = () => {
 
 // Default data for fallback
 const DEFAULT_MENU_ITEMS: MenuItem[] = [
-  { id: 1, name: "Paneer Butter Masala", price: 220, category: "Main Course" },
-  { id: 2, name: "Dal Tadka", price: 180, category: "Main Course" },
-  { id: 3, name: "Jeera Rice", price: 120, category: "Rice" },
-  { id: 4, name: "Butter Naan", price: 40, category: "Bread" },
-  { id: 5, name: "Veg Biryani", price: 250, category: "Rice" },
-  { id: 6, name: "Masala Chai", price: 30, category: "Beverages" },
-  { id: 7, name: "Fresh Lime Soda", price: 60, category: "Beverages" },
-  { id: 8, name: "Gulab Jamun", price: 80, category: "Dessert" }
+  { id: 1, name: "Paneer Butter Masala", price: 220, category: "Main Course", details: "Rich and creamy paneer curry with tomato gravy" },
+  { id: 2, name: "Dal Tadka", price: 180, category: "Main Course", details: "Yellow lentils tempered with cumin, garlic and spices" },
+  { id: 3, name: "Jeera Rice", price: 120, category: "Rice", details: "Fragrant basmati rice cooked with cumin seeds" },
+  { id: 4, name: "Butter Naan", price: 40, category: "Bread", details: "Soft leavened bread from tandoor, brushed with butter" },
+  { id: 5, name: "Veg Biryani", price: 250, category: "Rice", details: "Aromatic rice dish with mixed vegetables and spices" },
+  { id: 6, name: "Masala Chai", price: 30, category: "Beverages", details: "Spiced Indian tea with cardamom, ginger and cinnamon" },
+  { id: 7, name: "Fresh Lime Soda", price: 60, category: "Beverages", details: "Refreshing drink with fresh lime juice and soda water" },
+  { id: 8, name: "Gulab Jamun", price: 80, category: "Dessert", details: "Deep-fried milk solids soaked in sugar syrup" }
 ];
 
 const DEFAULT_TOURISM_PLACES: TourismPlace[] = [
@@ -99,6 +99,7 @@ export function useMenuItems() {
           const nameIdx = headers.indexOf("name");
           const priceIdx = headers.indexOf("price");
           const categoryIdx = headers.indexOf("category");
+          const detailsIdx = headers.indexOf("details");
           
           // Check if we have the required columns
           if (nameIdx === -1 || priceIdx === -1 || categoryIdx === -1) {
@@ -113,7 +114,8 @@ export function useMenuItems() {
               id: index + 1,
               name: row[nameIdx] || `Item ${index + 1}`,
               price: parseInt(row[priceIdx]) || 0,
-              category: row[categoryIdx] || "Uncategorized"
+              category: row[categoryIdx] || "Uncategorized",
+              details: detailsIdx !== -1 ? row[detailsIdx] || "" : undefined
             };
             return item;
           });

@@ -208,7 +208,12 @@ export default function Menu() {
                     <div key={item.id} className="flex justify-between items-center pb-3">
                       <div>
                         <h4>{item.name}</h4>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                        {item.details && (
+                          <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-1 mt-0.5">
+                            {item.details}
+                          </p>
+                        )}
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mt-0.5">
                           {formatPrice(item.price)}
                         </p>
                       </div>

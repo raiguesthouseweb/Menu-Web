@@ -216,57 +216,57 @@ export default function Menu() {
                     <CollapsibleContent className="mt-3">
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         {categoryItems.map((item) => (
-                      <Card key={item.id} className="flex justify-between items-center">
-                        <CardContent className="p-4 flex justify-between items-center w-full">
-                          <div>
-                            <h4 className="font-medium">{item.name}</h4>
-                            {item.details && (
-                              <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-2 mt-1">
-                                {item.details}
-                              </p>
-                            )}
-                            <p className="text-gray-600 dark:text-gray-400 mt-1 font-semibold">
-                              {formatPrice(item.price)}
-                            </p>
-                          </div>
-                          {(() => {
-                            const cartItem = items.find(i => i.id === item.id);
-                            const quantity = cartItem ? cartItem.quantity : 0;
-                            
-                            return quantity > 0 ? (
-                              <div className="flex items-center space-x-2">
-                                <Button 
-                                  onClick={() => removeItem(item.id)} 
-                                  variant="outline"
-                                  size="icon"
-                                  className="rounded-full h-8 w-8"
-                                >
-                                  <Minus className="h-3 w-3" />
-                                </Button>
-                                <span className="w-6 text-center font-medium">{quantity}</span>
-                                <Button 
-                                  onClick={() => addItem(item)} 
-                                  variant="outline"
-                                  size="icon"
-                                  className="rounded-full h-8 w-8"
-                                >
-                                  <Plus className="h-3 w-3" />
-                                </Button>
+                          <Card key={item.id} className="flex justify-between items-center">
+                            <CardContent className="p-4 flex justify-between items-center w-full">
+                              <div>
+                                <h4 className="font-medium">{item.name}</h4>
+                                {item.details && (
+                                  <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-2 mt-1">
+                                    {item.details}
+                                  </p>
+                                )}
+                                <p className="text-gray-600 dark:text-gray-400 mt-1 font-semibold">
+                                  {formatPrice(item.price)}
+                                </p>
                               </div>
-                            ) : (
-                              <Button 
-                                onClick={() => addItem(item)} 
-                                variant="outline"
-                                size="icon"
-                                className="rounded-full"
-                              >
-                                <Plus className="h-4 w-4" />
-                              </Button>
-                            );
-                          })()}
-                        </CardContent>
-                      </Card>
-                    ))}
+                              {(() => {
+                                const cartItem = items.find(i => i.id === item.id);
+                                const quantity = cartItem ? cartItem.quantity : 0;
+                                
+                                return quantity > 0 ? (
+                                  <div className="flex items-center space-x-2">
+                                    <Button 
+                                      onClick={() => removeItem(item.id)} 
+                                      variant="outline"
+                                      size="icon"
+                                      className="rounded-full h-8 w-8"
+                                    >
+                                      <Minus className="h-3 w-3" />
+                                    </Button>
+                                    <span className="w-6 text-center font-medium">{quantity}</span>
+                                    <Button 
+                                      onClick={() => addItem(item)} 
+                                      variant="outline"
+                                      size="icon"
+                                      className="rounded-full h-8 w-8"
+                                    >
+                                      <Plus className="h-3 w-3" />
+                                    </Button>
+                                  </div>
+                                ) : (
+                                  <Button 
+                                    onClick={() => addItem(item)} 
+                                    variant="outline"
+                                    size="icon"
+                                    className="rounded-full"
+                                  >
+                                    <Plus className="h-4 w-4" />
+                                  </Button>
+                                );
+                              })()}
+                            </CardContent>
+                          </Card>
+                        ))}
                       </div>
                     </CollapsibleContent>
                   </Collapsible>

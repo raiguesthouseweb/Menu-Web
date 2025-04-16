@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/button";
 import { 
   Plus, 
-  Minus,
+  Minus, 
   ShoppingCart 
 } from "lucide-react";
 import {
@@ -186,14 +186,41 @@ export default function Menu() {
                               {formatPrice(item.price)}
                             </p>
                           </div>
-                          <Button 
-                            onClick={() => addItem(item)} 
-                            variant="outline"
-                            size="icon"
-                            className="rounded-full"
-                          >
-                            <Plus className="h-4 w-4" />
-                          </Button>
+                          {(() => {
+                            const cartItem = items.find(i => i.id === item.id);
+                            const quantity = cartItem ? cartItem.quantity : 0;
+                            
+                            return quantity > 0 ? (
+                              <div className="flex items-center space-x-2">
+                                <Button 
+                                  onClick={() => removeItem(item.id)} 
+                                  variant="outline"
+                                  size="icon"
+                                  className="rounded-full h-8 w-8"
+                                >
+                                  <Minus className="h-3 w-3" />
+                                </Button>
+                                <span className="w-6 text-center font-medium">{quantity}</span>
+                                <Button 
+                                  onClick={() => addItem(item)} 
+                                  variant="outline"
+                                  size="icon"
+                                  className="rounded-full h-8 w-8"
+                                >
+                                  <Plus className="h-3 w-3" />
+                                </Button>
+                              </div>
+                            ) : (
+                              <Button 
+                                onClick={() => addItem(item)} 
+                                variant="outline"
+                                size="icon"
+                                className="rounded-full"
+                              >
+                                <Plus className="h-4 w-4" />
+                              </Button>
+                            );
+                          })()}
                         </CardContent>
                       </Card>
                     ))}

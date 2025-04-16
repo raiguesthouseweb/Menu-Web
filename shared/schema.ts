@@ -17,6 +17,7 @@ export const menuItems = pgTable("menu_items", {
   purchasePrice: integer("purchase_price"),
   category: text("category").notNull(),
   details: text("details"),
+  disabled: boolean("disabled").default(false),
 });
 
 // Orders Schema
@@ -60,6 +61,7 @@ export const insertMenuItemSchema = createInsertSchema(menuItems).pick({
   purchasePrice: true,
   category: true,
   details: true,
+  disabled: true,
 });
 
 export const insertOrderSchema = createInsertSchema(orders)

@@ -24,7 +24,7 @@ export interface IStorage {
   getOrdersByRoomOrMobile(query: string): Promise<Order[]>;
   getOrder(id: number): Promise<Order | undefined>;
   createOrder(order: InsertOrder): Promise<Order>;
-  updateOrderStatus(id: number, status: string): Promise<Order | undefined>;
+  updateOrderStatus(id: number, updates: { status?: string, settled?: boolean, restaurantPaid?: boolean }): Promise<Order | undefined>;
   
   // Tourism methods
   getTourismPlaces(): Promise<TourismPlace[]>;
@@ -256,17 +256,26 @@ export class MemStorage implements IStorage {
       id, 
       timestamp,
       name: order.name ?? null,
-      status: order.status ?? "Pending" 
+      status: order.status ?? "Pending",
+      settled: order.settled ?? false,
+      restaurantPaid: order.restaurantPaid ?? false
     };
     this.orders.set(id, newOrder);
     return newOrder;
   }
   
-  async updateOrderStatus(id: number, status: string): Promise<Order | undefined> {
+  async updateOrderStatus(id: number, updates: { status?: string, settled?: boolean, restaurantPaid?: boolean }): Promise<Order | undefined> {
     const existingOrder = this.orders.get(id);
     if (!existingOrder) return undefined;
     
-    const updatedOrder = { ...existingOrder, status };
+    // Allow updating status, settlement status, and restaurant payment status
+    const updatedOrder = { 
+      ...existingOrder,
+      ...(updates.status !== undefined ? { status: updates.status } : {}),
+      ...(updates.settled !== undefined ? { settled: updates.settled } : {}),
+      ...(updates.restaurantPaid !== undefined ? { restaurantPaid: updates.restaurantPaid } : {})
+    };
+    
     this.orders.set(id, updatedOrder);
     return updatedOrder;
   }

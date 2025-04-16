@@ -122,15 +122,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
       return res.status(400).json({ message: "Invalid ID format" });
     }
     
-    const statusSchema = z.object({
+    const updateSchema = z.object({
       status: z.string().refine(s => ["Pending", "Preparing", "Delivered"].includes(s), {
         message: "Status must be one of: Pending, Preparing, Delivered"
-      })
+      }).optional(),
+      settled: z.boolean().optional(),
+      restaurantPaid: z.boolean().optional()
+    }).refine(data => Object.keys(data).length > 0, {
+      message: "At least one field (status, settled, or restaurantPaid) must be provided"
     });
     
     try {
-      const { status } = statusSchema.parse(req.body);
-      const updatedOrder = await storage.updateOrderStatus(id, status);
+      const updates = updateSchema.parse(req.body);
+      const updatedOrder = await storage.updateOrderStatus(id, updates);
       
       if (!updatedOrder) {
         return res.status(404).json({ message: "Order not found" });
@@ -300,8 +304,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Intercept order status updates to send WebSocket notifications
   const originalUpdateOrderStatus = storage.updateOrderStatus.bind(storage);
-  storage.updateOrderStatus = async (id, status) => {
-    const updatedOrder = await originalUpdateOrderStatus(id, status);
+  storage.updateOrderStatus = async (id, updates) => {
+    const updatedOrder = await originalUpdateOrderStatus(id, updates);
     
     if (updatedOrder) {
       // Broadcast to all connected clients

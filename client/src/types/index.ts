@@ -9,7 +9,14 @@ export interface MenuItem {
   disabled?: boolean; // Whether the item is disabled/unavailable
 }
 
-export interface OrderItem extends MenuItem {
+export interface OrderItem {
+  id: number;
+  menuItemId: number;
+  name: string;
+  price: number;
+  purchasePrice?: number;
+  category: string;
+  details?: string;
   quantity: number;
 }
 
@@ -23,6 +30,8 @@ export interface Order {
   mobileNumber: string;
   items: OrderItem[];
   total: number;
+  settled?: boolean;
+  restaurantPaid?: boolean;
 }
 
 // Tourism related types

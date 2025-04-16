@@ -14,7 +14,9 @@ export const menuItems = pgTable("menu_items", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
   price: integer("price").notNull(),
+  purchasePrice: integer("purchase_price"),
   category: text("category").notNull(),
+  details: text("details"),
 });
 
 // Orders Schema
@@ -55,7 +57,9 @@ export const insertUserSchema = createInsertSchema(users).pick({
 export const insertMenuItemSchema = createInsertSchema(menuItems).pick({
   name: true,
   price: true,
+  purchasePrice: true,
   category: true,
+  details: true,
 });
 
 export const insertOrderSchema = createInsertSchema(orders)
@@ -65,6 +69,9 @@ export const insertOrderSchema = createInsertSchema(orders)
       id: z.number(),
       name: z.string(),
       price: z.number(),
+      purchasePrice: z.number().optional(),
+      category: z.string(),
+      details: z.string().optional(),
       quantity: z.number(),
     })),
   });

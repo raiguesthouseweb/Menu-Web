@@ -3,6 +3,7 @@ export interface MenuItem {
   id: number;
   name: string;
   price: number;
+  purchasePrice?: number; // Restaurant purchase price
   category: string;
   details?: string; // Optional details field
 }
@@ -40,7 +41,18 @@ export interface SheetConfig {
 }
 
 export interface AdminSettings {
+  // Export sheet configurations
   menuSheet: SheetConfig;
   ordersSheet: SheetConfig;
   tourismSheet: SheetConfig;
+  
+  // App settings
+  orderAlertSound: boolean;
+  darkMode: boolean;
+  language: string;
+  
+  // Export settings
+  exportEnabled: boolean;
+  exportSpreadsheetId: string;
+  exportSheetId: string;
 }

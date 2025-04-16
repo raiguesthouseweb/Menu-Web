@@ -69,16 +69,64 @@ export class MemStorage implements IStorage {
   }
   
   private initializeData() {
-    // Sample menu items
+    // Sample menu items with purchase prices and details
     const menuItems: InsertMenuItem[] = [
-      { name: "Paneer Butter Masala", price: 220, category: "Main Course" },
-      { name: "Dal Tadka", price: 180, category: "Main Course" },
-      { name: "Jeera Rice", price: 120, category: "Rice" },
-      { name: "Butter Naan", price: 40, category: "Bread" },
-      { name: "Veg Biryani", price: 250, category: "Rice" },
-      { name: "Masala Chai", price: 30, category: "Beverages" },
-      { name: "Fresh Lime Soda", price: 60, category: "Beverages" },
-      { name: "Gulab Jamun", price: 80, category: "Dessert" },
+      { 
+        name: "Paneer Butter Masala", 
+        price: 220, 
+        purchasePrice: 180, 
+        category: "Main Course",
+        details: "Rich and creamy paneer curry cooked in a tomato-based gravy with butter and spices."
+      },
+      { 
+        name: "Dal Tadka", 
+        price: 180, 
+        purchasePrice: 150, 
+        category: "Main Course",
+        details: "Yellow lentils tempered with cumin, garlic and spices."
+      },
+      { 
+        name: "Jeera Rice", 
+        price: 120, 
+        purchasePrice: 100, 
+        category: "Rice",
+        details: "Basmati rice cooked with cumin seeds."
+      },
+      { 
+        name: "Butter Naan", 
+        price: 40, 
+        purchasePrice: 30, 
+        category: "Bread",
+        details: "Soft leavened bread brushed with butter."
+      },
+      { 
+        name: "Veg Biryani", 
+        price: 250, 
+        purchasePrice: 210, 
+        category: "Rice",
+        details: "Fragrant basmati rice cooked with mixed vegetables and aromatic spices."
+      },
+      { 
+        name: "Masala Chai", 
+        price: 30, 
+        purchasePrice: 20, 
+        category: "Beverages",
+        details: "Traditional Indian tea brewed with milk and spices."
+      },
+      { 
+        name: "Fresh Lime Soda", 
+        price: 60, 
+        purchasePrice: 40, 
+        category: "Beverages",
+        details: "Refreshing drink made with fresh lime juice, water, and soda."
+      },
+      { 
+        name: "Gulab Jamun", 
+        price: 80, 
+        purchasePrice: 60, 
+        category: "Dessert",
+        details: "Sweet milk solid dumplings soaked in rose-flavored sugar syrup."
+      },
     ];
     
     menuItems.forEach(item => this.createMenuItem(item));

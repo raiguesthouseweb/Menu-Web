@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useTourismPlaces } from "@/hooks/use-google-sheets";
+import { useTourismPlaces } from "@/hooks/use-api";
 import { TOURISM_TAGS } from "@/config/constants";
 
 import { 
@@ -73,7 +73,7 @@ export default function Tourism() {
               Error Loading Tourism Information
             </h3>
             <p className="text-red-700 dark:text-red-400">
-              {error}
+              {error instanceof Error ? error.message : String(error)}
             </p>
           </CardContent>
         </Card>

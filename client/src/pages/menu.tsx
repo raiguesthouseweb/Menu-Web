@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "wouter";
-import { useMenuItems } from "@/hooks/use-google-sheets";
+import { useMenuItems } from "@/hooks/use-api";
 import { useCart } from "@/hooks/use-cart";
 import { useToast } from "@/hooks/use-toast";
 import { MENU_CATEGORIES } from "@/config/constants";
@@ -87,25 +87,41 @@ export default function Menu() {
       mobileNumber: values.mobileNumber,
     });
     
-    // Save order to local storage
-    const order = {
-      id: Date.now(),
-      timestamp: new Date().toISOString(),
-      status: "Pending",
-      name: values.name || "",
-      roomNumber: values.roomNumber,
-      mobileNumber: values.mobileNumber,
-      items: [...items],
-      total: getTotalPrice(),
-    };
-    
-    // Retrieve existing orders from localStorage or initialize empty array
-    const existingOrders = JSON.parse(localStorage.getItem("orders") || "[]");
-    localStorage.setItem("orders", JSON.stringify([...existingOrders, order]));
-    
-    // Clear the cart and navigate to confirmation page
-    clearCart();
-    navigate("/order-confirmation");
+    // Create order using the API
+    try {
+      const orderData = {
+        timestamp: new Date().toISOString(),
+        status: "Pending",
+        name: values.name || "",
+        roomNumber: values.roomNumber,
+        mobileNumber: values.mobileNumber,
+        items: [...items],
+        total: getTotalPrice(),
+      };
+      
+      // Use our API to create an order
+      const response = await fetch('/api/orders', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(orderData),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to place order. Please try again.');
+      }
+      
+      // Clear the cart and navigate to confirmation page
+      clearCart();
+      navigate("/order-confirmation");
+    } catch (err) {
+      toast({
+        title: "Error placing order",
+        description: err instanceof Error ? err.message : "An unknown error occurred",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -138,7 +154,7 @@ export default function Menu() {
                 Error Loading Menu
               </h3>
               <p className="text-red-700 dark:text-red-400">
-                {error}
+                {error instanceof Error ? error.message : String(error)}
               </p>
             </CardContent>
           </Card>

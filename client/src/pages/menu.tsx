@@ -10,6 +10,11 @@ import {
   Card, 
   CardContent 
 } from "@/components/ui/card";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger
+} from "@/components/ui/collapsible";
 import { 
   Skeleton
 } from "@/components/ui/skeleton";
@@ -19,7 +24,9 @@ import {
 import { 
   Plus, 
   Minus, 
-  ShoppingCart 
+  ShoppingCart,
+  ChevronDown,
+  ChevronRight 
 } from "lucide-react";
 import {
   Form,
@@ -46,6 +53,9 @@ export default function Menu() {
   const [_, navigate] = useLocation();
   const { toast } = useToast();
   
+  // State to track which categories are expanded
+  const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({});
+  
   // Form setup
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -65,10 +75,28 @@ export default function Menu() {
     });
   }, [orderDetails, form]);
   
-  // Update page title
+  // Update page title and initialize expanded categories
   useEffect(() => {
     document.title = "Order Food | Rai Guest House";
+    
+    // Initialize the first category as expanded
+    if (MENU_CATEGORIES.length > 0) {
+      const initialExpanded: Record<string, boolean> = {};
+      MENU_CATEGORIES.forEach((category, index) => {
+        // Expand the first category by default
+        initialExpanded[category] = index === 0;
+      });
+      setExpandedCategories(initialExpanded);
+    }
   }, []);
+  
+  // Toggle category expansion
+  const toggleCategory = (category: string) => {
+    setExpandedCategories(prev => ({
+      ...prev,
+      [category]: !prev[category]
+    }));
+  };
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     if (items.length === 0) {
@@ -169,10 +197,25 @@ export default function Menu() {
               if (categoryItems.length === 0) return null;
               
               return (
-                <div key={category}>
-                  <h3 className="text-xl font-semibold mb-3 text-primary">{category}</h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {categoryItems.map((item) => (
+                <div key={category} className="border rounded-lg p-4">
+                  <Collapsible
+                    open={expandedCategories[category]}
+                    onOpenChange={() => toggleCategory(category)}
+                  >
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-xl font-semibold text-primary">{category}</h3>
+                      <CollapsibleTrigger asChild>
+                        <Button variant="ghost" size="sm" className="w-9 p-0">
+                          {expandedCategories[category] ? 
+                            <ChevronDown className="h-4 w-4" /> : 
+                            <ChevronRight className="h-4 w-4" />
+                          }
+                        </Button>
+                      </CollapsibleTrigger>
+                    </div>
+                    <CollapsibleContent className="mt-3">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        {categoryItems.map((item) => (
                       <Card key={item.id} className="flex justify-between items-center">
                         <CardContent className="p-4 flex justify-between items-center w-full">
                           <div>
@@ -224,7 +267,9 @@ export default function Menu() {
                         </CardContent>
                       </Card>
                     ))}
-                  </div>
+                      </div>
+                    </CollapsibleContent>
+                  </Collapsible>
                 </div>
               );
             })}

@@ -23,6 +23,13 @@ export type TranslationKey =
   | 'common.login'
   | 'common.required'
   | 'common.optional'
+  | 'common.disable'
+  | 'common.enable'
+  | 'common.disabled'
+  | 'common.settle'
+  | 'common.settled'
+  | 'common.invoice'
+  | 'common.invoices'
   
   // Home page
   | 'home.welcome'
@@ -60,6 +67,21 @@ export type TranslationKey =
   | 'tourism.filter.romantic'
   | 'tourism.filter.educational'
   | 'tourism.noResults'
+  | 'tourism.places.mahakaleshwar.title'
+  | 'tourism.places.mahakaleshwar.description'
+  | 'tourism.places.kalbhairav.title'
+  | 'tourism.places.kalbhairav.description'
+  | 'tourism.places.ramghat.title'
+  | 'tourism.places.ramghat.description'
+  
+  // Invoice page
+  | 'invoice.title'
+  | 'invoice.totalAmount'
+  | 'invoice.roomNumber'
+  | 'invoice.orderCount'
+  | 'invoice.viewDetails'
+  | 'invoice.settlePayment'
+  | 'invoice.paymentStatus'
   
   // Admin page
   | 'admin.title'
@@ -70,6 +92,7 @@ export type TranslationKey =
   | 'admin.tourismContent'
   | 'admin.settings'
   | 'admin.orderManagement'
+  | 'admin.invoices'
   | 'admin.addMenuItem'
   | 'admin.addTourismPlace'
   | 'admin.generalSettings'
@@ -103,6 +126,13 @@ const en: Record<TranslationKey, string> = {
   'common.login': 'Login',
   'common.required': 'Required',
   'common.optional': 'Optional',
+  'common.disable': 'Disable',
+  'common.enable': 'Enable',
+  'common.disabled': 'Disabled',
+  'common.settle': 'Settle Payment',
+  'common.settled': 'Payment Settled',
+  'common.invoice': 'Invoice',
+  'common.invoices': 'Invoices',
   
   'home.welcome': 'Welcome to Rai Guest House',
   'home.subtitle': 'Experience comfort and excellent service during your stay',
@@ -136,6 +166,20 @@ const en: Record<TranslationKey, string> = {
   'tourism.filter.romantic': 'Romantic',
   'tourism.filter.educational': 'Educational',
   'tourism.noResults': 'No places found matching the selected filter',
+  'tourism.places.mahakaleshwar.title': 'Mahakaleshwar Temple',
+  'tourism.places.mahakaleshwar.description': 'One of the twelve Jyotirlingas, the most sacred abodes of Lord Shiva.',
+  'tourism.places.kalbhairav.title': 'Kal Bhairav Temple',
+  'tourism.places.kalbhairav.description': 'Ancient temple dedicated to Bhairava, a fierce manifestation of Lord Shiva.',
+  'tourism.places.ramghat.title': 'Ram Ghat',
+  'tourism.places.ramghat.description': 'One of the most pristine ghats on the Shipra River, perfect for sunrise and sunset views.',
+
+  'invoice.title': 'Invoices',
+  'invoice.totalAmount': 'Total Amount',
+  'invoice.roomNumber': 'Room Number',
+  'invoice.orderCount': 'Order Count',
+  'invoice.viewDetails': 'View Details',
+  'invoice.settlePayment': 'Settle Payment',
+  'invoice.paymentStatus': 'Payment Status',
   
   'admin.title': 'Admin Panel',
   'admin.dashboard': 'Dashboard',
@@ -145,6 +189,7 @@ const en: Record<TranslationKey, string> = {
   'admin.tourismContent': 'Tourism Content',
   'admin.settings': 'Settings',
   'admin.orderManagement': 'Order Management',
+  'admin.invoices': 'Invoices',
   'admin.addMenuItem': 'Add New Item',
   'admin.addTourismPlace': 'Add New Place',
   'admin.generalSettings': 'General Settings',

@@ -100,9 +100,23 @@ export default function Tourism() {
             filteredPlaces.map((place) => (
               <Card key={place.id} className="overflow-hidden flex flex-col h-full">
                 <CardContent className="p-6 flex-grow flex flex-col">
-                  <h3 className="font-bold text-xl mb-2">{place.title}</h3>
+                  <h3 className="font-bold text-xl mb-2">
+                    {place.title === "Mahakaleshwar Temple" 
+                      ? t('tourism.places.mahakaleshwar.title')
+                      : place.title === "Kal Bhairav Temple" 
+                        ? t('tourism.places.kalbhairav.title')
+                        : place.title === "Ram Ghat" 
+                          ? t('tourism.places.ramghat.title')
+                          : place.title}
+                  </h3>
                   <p className="text-gray-600 dark:text-gray-300 mb-4 flex-grow">
-                    {place.description}
+                    {place.title === "Mahakaleshwar Temple" 
+                      ? t('tourism.places.mahakaleshwar.description')
+                      : place.title === "Kal Bhairav Temple" 
+                        ? t('tourism.places.kalbhairav.description')
+                        : place.title === "Ram Ghat" 
+                          ? t('tourism.places.ramghat.description')
+                          : place.description}
                   </p>
                   
                   <div className="flex items-center text-sm text-gray-500 dark:text-gray-400 mb-3">

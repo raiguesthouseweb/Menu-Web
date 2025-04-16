@@ -484,6 +484,7 @@ export default function Admin() {
         distance: data.distance,
         tags: data.tags || [],
         mapsLink: data.mapsLink || "",
+        photoLinks: data.photoLinks || [],
       });
     } else {
       // Add new place using API
@@ -493,6 +494,7 @@ export default function Admin() {
         distance: data.distance,
         tags: data.tags || [],
         mapsLink: data.mapsLink || "",
+        photoLinks: data.photoLinks || [],
       });
     }
     

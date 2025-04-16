@@ -160,8 +160,24 @@ export default function Menu() {
         throw new Error('Failed to place order. Please try again.');
       }
       
-      // Clear the cart and navigate to confirmation page
+      // Clear the cart and order details
       clearCart();
+      
+      // Reset order details to default values
+      setOrderDetails({
+        name: "",
+        roomNumber: "",
+        mobileNumber: ""
+      });
+      
+      // Reset form values
+      form.reset({
+        name: "",
+        roomNumber: "",
+        mobileNumber: ""
+      });
+      
+      // Navigate to confirmation page
       navigate("/order-confirmation");
     } catch (err) {
       toast({
@@ -258,13 +274,13 @@ export default function Menu() {
                                 </p>
                               </div>
                               {(() => {
-                                const cartItem = items.find(i => i.id === item.id);
+                                const cartItem = items.find(i => i.menuItemId === item.id);
                                 const quantity = cartItem ? cartItem.quantity : 0;
                                 
                                 return quantity > 0 ? (
                                   <div className="flex items-center space-x-2">
                                     <Button 
-                                      onClick={() => removeItem(item.id)} 
+                                      onClick={() => cartItem && removeItem(cartItem.id)} 
                                       variant="outline"
                                       size="icon"
                                       className="rounded-full h-8 w-8"
@@ -310,7 +326,18 @@ export default function Menu() {
         <Card className="sticky top-20 max-h-[calc(100vh-5rem)] overflow-y-auto">
           <CardContent className="p-4 divide-y">
             <div className="pb-4">
-              <h3 className="text-xl font-semibold mb-4">Your Order</h3>
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-xl font-semibold">Your Order</h3>
+                {items.length > 0 && (
+                  <Button 
+                    onClick={clearCart} 
+                    variant="destructive" 
+                    size="sm"
+                  >
+                    Reset Cart
+                  </Button>
+                )}
+              </div>
               
               {items.length === 0 && (
                 <div className="text-gray-500 dark:text-gray-400 text-center py-6">

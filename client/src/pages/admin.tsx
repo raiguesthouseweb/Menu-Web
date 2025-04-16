@@ -93,6 +93,7 @@ import * as z from "zod";
 const menuItemSchema = z.object({
   name: z.string().min(2, { message: "Item name is required" }),
   price: z.coerce.number().min(1, { message: "Price must be greater than 0" }),
+  purchasePrice: z.coerce.number().min(0, { message: "Purchase price must not be negative" }).optional(),
   category: z.string({ required_error: "Please select a category" }),
   details: z.string().optional()
 });
@@ -184,6 +185,7 @@ export default function Admin() {
     defaultValues: {
       name: "",
       price: 0,
+      purchasePrice: 0,
       category: "",
       details: ""
     }
@@ -295,6 +297,7 @@ export default function Admin() {
     if (editingMenuItem) {
       menuItemForm.setValue("name", editingMenuItem.name);
       menuItemForm.setValue("price", editingMenuItem.price);
+      menuItemForm.setValue("purchasePrice", editingMenuItem.purchasePrice || 0);
       menuItemForm.setValue("category", editingMenuItem.category);
       menuItemForm.setValue("details", editingMenuItem.details || "");
     } else {
@@ -394,6 +397,7 @@ export default function Admin() {
         ...editingMenuItem,
         name: data.name,
         price: data.price,
+        purchasePrice: data.purchasePrice,
         category: data.category,
         details: data.details
       };
@@ -413,6 +417,7 @@ export default function Admin() {
         id: Date.now(),
         name: data.name,
         price: data.price,
+        purchasePrice: data.purchasePrice,
         category: data.category,
         details: data.details
       };
@@ -741,10 +746,27 @@ export default function Admin() {
                             name="price"
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel>Price (₹)</FormLabel>
+                                <FormLabel>Sale Price (₹)</FormLabel>
                                 <FormControl>
                                   <Input type="number" placeholder="40" {...field} />
                                 </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          
+                          <FormField
+                            control={menuItemForm.control}
+                            name="purchasePrice"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Purchase Price (₹)</FormLabel>
+                                <FormControl>
+                                  <Input type="number" placeholder="30" {...field} />
+                                </FormControl>
+                                <FormDescription>
+                                  Price paid to restaurant for outsourced food items
+                                </FormDescription>
                                 <FormMessage />
                               </FormItem>
                             )}
@@ -870,10 +892,44 @@ export default function Admin() {
                                       name="price"
                                       render={({ field }) => (
                                         <FormItem>
-                                          <FormLabel>Price (₹)</FormLabel>
+                                          <FormLabel>Sale Price (₹)</FormLabel>
                                           <FormControl>
                                             <Input type="number" {...field} />
                                           </FormControl>
+                                          <FormMessage />
+                                        </FormItem>
+                                      )}
+                                    />
+                                    
+                                    <FormField
+                                      control={menuItemForm.control}
+                                      name="purchasePrice"
+                                      render={({ field }) => (
+                                        <FormItem>
+                                          <FormLabel>Purchase Price (₹)</FormLabel>
+                                          <FormControl>
+                                            <Input type="number" {...field} />
+                                          </FormControl>
+                                          <FormDescription>
+                                            Price paid to restaurant for outsourced food items
+                                          </FormDescription>
+                                          <FormMessage />
+                                        </FormItem>
+                                      )}
+                                    />
+                                    
+                                    <FormField
+                                      control={menuItemForm.control}
+                                      name="purchasePrice"
+                                      render={({ field }) => (
+                                        <FormItem>
+                                          <FormLabel>Purchase Price (₹)</FormLabel>
+                                          <FormControl>
+                                            <Input type="number" {...field} />
+                                          </FormControl>
+                                          <FormDescription>
+                                            Price paid to restaurant for outsourced food items
+                                          </FormDescription>
                                           <FormMessage />
                                         </FormItem>
                                       )}

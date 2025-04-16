@@ -117,6 +117,12 @@ const tourismPlaceSchema = z.object({
   photoLinks: z.array(z.string().url({ message: "Please enter valid photo URLs" })).optional()
 });
 
+const adminUserSchema = z.object({
+  username: z.string().min(3, { message: "Username must be at least 3 characters" }),
+  password: z.string().min(6, { message: "Password must be at least 6 characters" }),
+  isAdmin: z.boolean().default(true)
+});
+
 const passwordChangeSchema = z.object({
   currentPassword: z.string().min(1, { message: "Current password is required" }),
   newPassword: z.string().min(8, { message: "Password must be at least 8 characters" }),
@@ -376,6 +382,62 @@ export default function Admin() {
     }
   }, [editingTourismPlace, tourismPlaceForm]);
   
+  // Initialize admin user management form
+  const adminUserForm = useForm<z.infer<typeof adminUserSchema>>({
+    resolver: zodResolver(adminUserSchema),
+    defaultValues: {
+      username: "",
+      password: "",
+      isAdmin: true
+    }
+  });
+
+  // State for admin users management
+  const { 
+    users: adminUsers = [], 
+    loading: loadingUsers, 
+    addAdminUser,
+    getActivityLogs
+  } = useAdminUsers();
+  
+  const [activityLogs, setActivityLogs] = useState<ActivityLog[]>([]);
+  const [loadingLogs, setLoadingLogs] = useState(false);
+
+  // Fetch activity logs
+  const fetchActivityLogs = async () => {
+    setLoadingLogs(true);
+    try {
+      const logs = await getActivityLogs();
+      setActivityLogs(logs || []);
+    } catch (error) {
+      console.error("Error fetching activity logs:", error);
+      toast({
+        title: "Error",
+        description: "Failed to load activity logs",
+        variant: "destructive"
+      });
+    } finally {
+      setLoadingLogs(false);
+    }
+  };
+
+  // Handle adding new admin user
+  const handleAddAdminUser = (data: z.infer<typeof adminUserSchema>) => {
+    addAdminUser({
+      username: data.username,
+      password: data.password,
+      isAdmin: data.isAdmin
+    });
+    adminUserForm.reset();
+  };
+
+  // Load activity logs when the users tab is activated
+  useEffect(() => {
+    if (activeTab === "users") {
+      fetchActivityLogs();
+    }
+  }, [activeTab]);
+
   // Use the global auth logout function
   const handleLogout = () => {
     logout();
@@ -1746,6 +1808,198 @@ export default function Admin() {
                   </Table>
                 </div>
               )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+        
+        {/* Admin Users Tab */}
+        <TabsContent value="users">
+          <Card>
+            <CardHeader>
+              <CardTitle>Admin User Management</CardTitle>
+              <CardDescription>Manage admin users and view activity logs</CardDescription>
+            </CardHeader>
+            <CardContent className="p-6">
+              <Tabs defaultValue="users">
+                <TabsList className="mb-6">
+                  <TabsTrigger value="users">Admin Users</TabsTrigger>
+                  <TabsTrigger value="logs">Activity Logs</TabsTrigger>
+                </TabsList>
+                
+                <TabsContent value="users">
+                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
+                    <h3 className="text-xl font-semibold">Admin Users</h3>
+                    <div className="mt-3 sm:mt-0">
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Button>
+                            <Plus className="h-4 w-4 mr-2" />
+                            Add New Admin
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                          <DialogHeader>
+                            <DialogTitle>Add New Admin User</DialogTitle>
+                            <DialogDescription>
+                              Create a new admin user account. Set a strong password.
+                            </DialogDescription>
+                          </DialogHeader>
+                          
+                          <Form {...adminUserForm}>
+                            <form onSubmit={adminUserForm.handleSubmit(handleAddAdminUser)} className="space-y-4 pt-4">
+                              <FormField
+                                control={adminUserForm.control}
+                                name="username"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Username</FormLabel>
+                                    <FormControl>
+                                      <Input placeholder="staffname" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                              
+                              <FormField
+                                control={adminUserForm.control}
+                                name="password"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Password</FormLabel>
+                                    <FormControl>
+                                      <Input type="password" placeholder="Strong password" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                              
+                              <FormField
+                                control={adminUserForm.control}
+                                name="isAdmin"
+                                render={({ field }) => (
+                                  <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                                    <FormControl>
+                                      <Checkbox
+                                        checked={field.value}
+                                        onCheckedChange={field.onChange}
+                                      />
+                                    </FormControl>
+                                    <div className="space-y-1 leading-none">
+                                      <FormLabel>
+                                        Admin Privileges
+                                      </FormLabel>
+                                      <FormDescription>
+                                        Grant full administrative access
+                                      </FormDescription>
+                                    </div>
+                                  </FormItem>
+                                )}
+                              />
+                              
+                              <DialogFooter>
+                                <Button type="submit">Create User</Button>
+                              </DialogFooter>
+                            </form>
+                          </Form>
+                        </DialogContent>
+                      </Dialog>
+                    </div>
+                  </div>
+                  
+                  {loadingUsers ? (
+                    <div className="flex justify-center items-center py-12">
+                      <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                    </div>
+                  ) : (
+                    <div className="overflow-x-auto">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Username</TableHead>
+                            <TableHead>Role</TableHead>
+                            <TableHead>Last Login</TableHead>
+                            <TableHead className="text-right">Actions</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {adminUsers.map((user) => (
+                            <TableRow key={user.id}>
+                              <TableCell>{user.username}</TableCell>
+                              <TableCell>{user.isAdmin ? "Admin" : "Staff"}</TableCell>
+                              <TableCell>{user.lastLogin ? formatDate(user.lastLogin) : "Never"}</TableCell>
+                              <TableCell className="text-right">
+                                <div className="flex justify-end gap-2">
+                                  <Button 
+                                    variant="ghost" 
+                                    size="sm" 
+                                    className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
+                                    disabled={user.username === 'admin'} // Prevent editing default admin
+                                  >
+                                    <Edit className="h-4 w-4 mr-1" />
+                                    Edit
+                                  </Button>
+                                </div>
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  )}
+                </TabsContent>
+                
+                <TabsContent value="logs">
+                  <div className="mb-6">
+                    <h3 className="text-xl font-semibold">Activity Logs</h3>
+                    <p className="text-muted-foreground mt-2">
+                      System records of admin activity and changes
+                    </p>
+                  </div>
+                  
+                  {loadingLogs ? (
+                    <div className="flex justify-center items-center py-12">
+                      <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                    </div>
+                  ) : (
+                    <div className="overflow-x-auto">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Timestamp</TableHead>
+                            <TableHead>Admin</TableHead>
+                            <TableHead>Action</TableHead>
+                            <TableHead>Details</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {activityLogs.map((log) => (
+                            <TableRow key={log.id}>
+                              <TableCell>{formatDate(log.timestamp)}</TableCell>
+                              <TableCell>
+                                {log.userId 
+                                  ? adminUsers.find(u => u.id === log.userId)?.username || 'Unknown' 
+                                  : 'System'
+                                }
+                              </TableCell>
+                              <TableCell>{log.action}</TableCell>
+                              <TableCell>{log.details || '-'}</TableCell>
+                            </TableRow>
+                          ))}
+                          {activityLogs.length === 0 && (
+                            <TableRow>
+                              <TableCell colSpan={4} className="text-center py-4 text-muted-foreground">
+                                No activity logs found
+                              </TableCell>
+                            </TableRow>
+                          )}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  )}
+                </TabsContent>
+              </Tabs>
             </CardContent>
           </Card>
         </TabsContent>

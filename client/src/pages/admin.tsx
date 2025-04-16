@@ -480,8 +480,8 @@ export default function Admin() {
         title: data.title,
         description: data.description,
         distance: data.distance,
-        tags: data.tags,
-        mapsLink: data.mapsLink,
+        tags: data.tags || [],
+        mapsLink: data.mapsLink || "",
       });
     } else {
       // Add new place using API
@@ -489,8 +489,8 @@ export default function Admin() {
         title: data.title,
         description: data.description,
         distance: data.distance,
-        tags: data.tags,
-        mapsLink: data.mapsLink,
+        tags: data.tags || [],
+        mapsLink: data.mapsLink || "",
       });
     }
     

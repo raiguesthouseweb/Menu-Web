@@ -1,5 +1,6 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
+import { WebSocketServer, WebSocket } from "ws";
 import { storage } from "./storage";
 import { insertMenuItemSchema, insertOrderSchema, insertTourismPlaceSchema, insertAdminSettingSchema } from "@shared/schema";
 import { z } from "zod";
@@ -239,7 +240,85 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // Create and return the HTTP server
+  // Create the HTTP server
   const httpServer = createServer(app);
+  
+  // Set up WebSocket server for real-time notifications
+  const wss = new WebSocketServer({ server: httpServer, path: '/ws' });
+  
+  // Store connected clients
+  const clients = new Set<WebSocket>();
+  
+  wss.on('connection', (ws) => {
+    console.log('WebSocket client connected');
+    
+    // Add client to the set
+    clients.add(ws);
+    
+    // Send initial message
+    ws.send(JSON.stringify({ type: 'connection', message: 'Connected to Rai Guest House WebSocket server' }));
+    
+    // Handle messages from clients
+    ws.on('message', (message) => {
+      try {
+        const data = JSON.parse(message.toString());
+        console.log('Received message:', data);
+        
+        // Echo back to sender for testing
+        ws.send(JSON.stringify({ type: 'echo', data }));
+      } catch (error) {
+        console.error('Error parsing WebSocket message:', error);
+      }
+    });
+    
+    // Handle disconnection
+    ws.on('close', () => {
+      console.log('WebSocket client disconnected');
+      clients.delete(ws);
+    });
+  });
+  
+  // Intercept order creation to send WebSocket notifications
+  const originalCreateOrder = storage.createOrder.bind(storage);
+  storage.createOrder = async (orderData) => {
+    const newOrder = await originalCreateOrder(orderData);
+    
+    // Broadcast to all connected clients
+    const notification = JSON.stringify({
+      type: 'new-order',
+      order: newOrder
+    });
+    
+    clients.forEach(client => {
+      if (client.readyState === WebSocket.OPEN) {
+        client.send(notification);
+      }
+    });
+    
+    return newOrder;
+  };
+  
+  // Intercept order status updates to send WebSocket notifications
+  const originalUpdateOrderStatus = storage.updateOrderStatus.bind(storage);
+  storage.updateOrderStatus = async (id, status) => {
+    const updatedOrder = await originalUpdateOrderStatus(id, status);
+    
+    if (updatedOrder) {
+      // Broadcast to all connected clients
+      const notification = JSON.stringify({
+        type: 'order-status-update',
+        order: updatedOrder
+      });
+      
+      clients.forEach(client => {
+        if (client.readyState === WebSocket.OPEN) {
+          client.send(notification);
+        }
+      });
+    }
+    
+    return updatedOrder;
+  };
+  
   return httpServer;
 }

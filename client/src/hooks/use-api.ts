@@ -14,12 +14,15 @@ export function useMenuItems() {
     error 
   } = useQuery({
     queryKey: ['/api/menu'],
-    onError: (err: Error) => {
-      toast({
-        title: "Error loading menu items",
-        description: err.message || "Unknown error occurred",
-        variant: "destructive",
-      });
+    meta: {
+      errorHandler: (error: unknown) => {
+        const err = error as Error;
+        toast({
+          title: "Error loading menu items",
+          description: err.message || "Unknown error occurred",
+          variant: "destructive",
+        });
+      }
     }
   });
 
@@ -107,7 +110,8 @@ export function useTourismPlaces() {
     error 
   } = useQuery({
     queryKey: ['/api/tourism'],
-    onError: (err) => {
+    onError: (error: unknown) => {
+      const err = error as Error;
       toast({
         title: "Error loading tourism places",
         description: err instanceof Error ? err.message : "Unknown error occurred",
@@ -205,7 +209,8 @@ export function useOrders(filterBy?: string) {
     refetch 
   } = useQuery({
     queryKey,
-    onError: (err) => {
+    onError: (error: unknown) => {
+      const err = error as Error;
       toast({
         title: "Error loading orders",
         description: err instanceof Error ? err.message : "Unknown error occurred",
@@ -300,7 +305,8 @@ export function useAdminSettings(key: string) {
     error 
   } = useQuery({
     queryKey: [`/api/settings/${key}`],
-    onError: (err) => {
+    onError: (error: unknown) => {
+      const err = error as Error;
       // Don't show toast on 404 - it's normal for settings not to exist yet
       if (err instanceof Error && !err.message.includes("404")) {
         toast({

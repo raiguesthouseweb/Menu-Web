@@ -6,6 +6,7 @@ export interface MenuItem {
   purchasePrice?: number; // Restaurant purchase price
   category: string;
   details?: string; // Optional details field
+  disabled?: boolean; // Whether the item is disabled/unavailable
 }
 
 export interface OrderItem extends MenuItem {

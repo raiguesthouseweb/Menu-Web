@@ -895,23 +895,43 @@ export default function Admin() {
                     </TableHeader>
                     <TableBody>
                       {menuItems.map((item) => (
-                        <TableRow key={item.id}>
+                        <TableRow key={item.id} className={item.disabled ? "opacity-50" : ""}>
                           <TableCell>{item.name}</TableCell>
                           <TableCell>{item.category}</TableCell>
                           <TableCell>{item.price}</TableCell>
                           <TableCell className="text-right">
-                            <Dialog>
-                              <DialogTrigger asChild>
-                                <Button 
-                                  variant="ghost" 
-                                  size="sm" 
-                                  className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
-                                  onClick={() => setEditingMenuItem(item)}
-                                >
-                                  <Edit className="h-4 w-4 mr-1" />
-                                  Edit
-                                </Button>
-                              </DialogTrigger>
+                            <div className="flex justify-end gap-2">
+                              <Button 
+                                variant={item.disabled ? "outline" : "ghost"} 
+                                size="sm" 
+                                className={item.disabled ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"}
+                                onClick={() => handleToggleMenuItemStatus(item)}
+                              >
+                                {item.disabled ? (
+                                  <>
+                                    <Play className="h-4 w-4 mr-1" />
+                                    Enable
+                                  </>
+                                ) : (
+                                  <>
+                                    <Ban className="h-4 w-4 mr-1" />
+                                    Disable
+                                  </>
+                                )}
+                              </Button>
+                              
+                              <Dialog>
+                                <DialogTrigger asChild>
+                                  <Button 
+                                    variant="ghost" 
+                                    size="sm" 
+                                    className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
+                                    onClick={() => setEditingMenuItem(item)}
+                                  >
+                                    <Edit className="h-4 w-4 mr-1" />
+                                    Edit
+                                  </Button>
+                                </DialogTrigger>
                               <DialogContent>
                                 <DialogHeader>
                                   <DialogTitle>Edit Menu Item</DialogTitle>
@@ -1031,6 +1051,7 @@ export default function Admin() {
                               <Trash className="h-4 w-4 mr-1" />
                               Remove
                             </Button>
+                            </div>
                           </TableCell>
                         </TableRow>
                       ))}

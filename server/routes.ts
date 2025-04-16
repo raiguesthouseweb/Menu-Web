@@ -1,11 +1,122 @@
-import type { Express } from "express";
+import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import { WebSocketServer, WebSocket } from "ws";
 import { storage } from "./storage";
-import { insertMenuItemSchema, insertOrderSchema, insertTourismPlaceSchema, insertAdminSettingSchema } from "@shared/schema";
+import { 
+  insertUserSchema, 
+  insertActivityLogSchema,
+  insertMenuItemSchema, 
+  insertOrderSchema, 
+  insertTourismPlaceSchema, 
+  insertAdminSettingSchema 
+} from "@shared/schema";
 import { z } from "zod";
 
+// Middleware to verify admin authentication
+function requireAuth(req: Request, res: Response, next: NextFunction) {
+  const userId = req.header('X-User-ID');
+  
+  if (!userId) {
+    return res.status(401).json({ message: "Authentication required" });
+  }
+  
+  const parsedUserId = parseInt(userId);
+  if (isNaN(parsedUserId)) {
+    return res.status(400).json({ message: "Invalid user ID" });
+  }
+
+  // Add userId to request for use in activity logging
+  (req as any).userId = parsedUserId;
+  
+  next();
+}
+
 export async function registerRoutes(app: Express): Promise<Server> {
+  // API routes for authentication and user management
+  app.post("/api/auth/login", async (req, res) => {
+    try {
+      const loginSchema = z.object({
+        username: z.string(),
+        password: z.string()
+      });
+      
+      const { username, password } = loginSchema.parse(req.body);
+      const user = await storage.getUserByUsername(username);
+      
+      if (!user || user.password !== password) {
+        return res.status(401).json({ message: "Invalid username or password" });
+      }
+      
+      // Update last login timestamp
+      await storage.updateUserLastLogin(user.id);
+      
+      // Log the login activity
+      await storage.logActivity({
+        userId: user.id,
+        action: "LOGIN",
+        details: `User ${username} logged in`
+      });
+      
+      // Return user data (excluding password)
+      const { password: _, ...userData } = user;
+      res.json({ ...userData });
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid login data", errors: error.errors });
+      }
+      res.status(500).json({ message: "Login failed" });
+    }
+  });
+  
+  // API routes for users (admin only)
+  app.get("/api/users", requireAuth, async (req, res) => {
+    try {
+      const users = await storage.getUsers();
+      
+      // Remove passwords from the response
+      const sanitizedUsers = users.map(user => {
+        const { password, ...userData } = user;
+        return userData;
+      });
+      
+      res.json(sanitizedUsers);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch users" });
+    }
+  });
+  
+  app.post("/api/users", requireAuth, async (req, res) => {
+    try {
+      const userData = insertUserSchema.parse(req.body);
+      const newUser = await storage.createUser(userData);
+      
+      // Log the activity
+      await storage.logActivity({
+        userId: (req as any).userId,
+        action: "CREATE_USER",
+        details: `Created new user: ${userData.username}`
+      });
+      
+      // Remove password from the response
+      const { password, ...sanitizedUser } = newUser;
+      res.status(201).json(sanitizedUser);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid user data", errors: error.errors });
+      }
+      res.status(500).json({ message: "Failed to create user" });
+    }
+  });
+  
+  // API routes for activity logs (admin only)
+  app.get("/api/activity-logs", requireAuth, async (req, res) => {
+    try {
+      const logs = await storage.getActivityLogs();
+      res.json(logs);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch activity logs" });
+    }
+  });
   // API routes for menu items
   app.get("/api/menu", async (req, res) => {
     const menuItems = await storage.getMenuItems();
@@ -26,7 +137,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(menuItem);
   });
   
-  app.post("/api/menu", async (req, res) => {
+  app.post("/api/menu", requireAuth, async (req, res) => {
     try {
       const menuItemData = insertMenuItemSchema.parse(req.body);
       const newMenuItem = await storage.createMenuItem(menuItemData);
@@ -39,7 +150,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  app.patch("/api/menu/:id", async (req, res) => {
+  app.patch("/api/menu/:id", requireAuth, async (req, res) => {
     const id = parseInt(req.params.id);
     if (isNaN(id)) {
       return res.status(400).json({ message: "Invalid ID format" });
@@ -62,7 +173,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  app.delete("/api/menu/:id", async (req, res) => {
+  app.delete("/api/menu/:id", requireAuth, async (req, res) => {
     const id = parseInt(req.params.id);
     if (isNaN(id)) {
       return res.status(400).json({ message: "Invalid ID format" });
@@ -116,7 +227,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  app.patch("/api/orders/:id/status", async (req, res) => {
+  app.patch("/api/orders/:id/status", requireAuth, async (req, res) => {
     const id = parseInt(req.params.id);
     if (isNaN(id)) {
       return res.status(400).json({ message: "Invalid ID format" });
@@ -169,7 +280,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(tourismPlace);
   });
   
-  app.post("/api/tourism", async (req, res) => {
+  app.post("/api/tourism", requireAuth, async (req, res) => {
     try {
       const tourismPlaceData = insertTourismPlaceSchema.parse(req.body);
       const newTourismPlace = await storage.createTourismPlace(tourismPlaceData);
@@ -182,7 +293,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  app.patch("/api/tourism/:id", async (req, res) => {
+  app.patch("/api/tourism/:id", requireAuth, async (req, res) => {
     const id = parseInt(req.params.id);
     if (isNaN(id)) {
       return res.status(400).json({ message: "Invalid ID format" });
@@ -205,7 +316,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  app.delete("/api/tourism/:id", async (req, res) => {
+  app.delete("/api/tourism/:id", requireAuth, async (req, res) => {
     const id = parseInt(req.params.id);
     if (isNaN(id)) {
       return res.status(400).json({ message: "Invalid ID format" });

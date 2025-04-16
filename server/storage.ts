@@ -1,5 +1,6 @@
 import { 
   User, InsertUser, 
+  ActivityLog, InsertActivityLog,
   MenuItem, InsertMenuItem,
   Order, InsertOrder,
   TourismPlace, InsertTourismPlace,
@@ -11,6 +12,12 @@ export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
+  updateUserLastLogin(id: number): Promise<User | undefined>;
+  getUsers(): Promise<User[]>;
+  
+  // Activity Log methods
+  logActivity(log: InsertActivityLog): Promise<ActivityLog>;
+  getActivityLogs(): Promise<ActivityLog[]>;
   
   // Menu methods
   getMenuItems(): Promise<MenuItem[]>;
@@ -40,12 +47,14 @@ export interface IStorage {
 
 export class MemStorage implements IStorage {
   private users: Map<number, User>;
+  private activityLogs: Map<number, ActivityLog>;
   private menuItems: Map<number, MenuItem>;
   private orders: Map<number, Order>;
   private tourismPlaces: Map<number, TourismPlace>;
   private adminSettings: Map<string, AdminSetting>;
   
   private userCurrentId: number;
+  private activityLogCurrentId: number;
   private menuItemCurrentId: number;
   private orderCurrentId: number;
   private tourismPlaceCurrentId: number;
@@ -53,12 +62,14 @@ export class MemStorage implements IStorage {
 
   constructor() {
     this.users = new Map();
+    this.activityLogs = new Map();
     this.menuItems = new Map();
     this.orders = new Map();
     this.tourismPlaces = new Map();
     this.adminSettings = new Map();
     
     this.userCurrentId = 1;
+    this.activityLogCurrentId = 1;
     this.menuItemCurrentId = 1;
     this.orderCurrentId = 1;
     this.tourismPlaceCurrentId = 1;
@@ -69,6 +80,13 @@ export class MemStorage implements IStorage {
   }
   
   private initializeData() {
+    // Create default admin user
+    this.createUser({
+      username: "admin",
+      password: "superman123", // The password specified in the requirements
+      isAdmin: true
+    });
+    
     // Sample menu items with purchase prices and details
     const menuItems: InsertMenuItem[] = [
       { 
@@ -204,9 +222,41 @@ export class MemStorage implements IStorage {
 
   async createUser(insertUser: InsertUser): Promise<User> {
     const id = this.userCurrentId++;
-    const user: User = { ...insertUser, id };
+    const user: User = { 
+      ...insertUser, 
+      id,
+      isAdmin: insertUser.isAdmin ?? true,
+      lastLogin: null
+    };
     this.users.set(id, user);
     return user;
+  }
+
+  async updateUserLastLogin(id: number): Promise<User | undefined> {
+    const existingUser = this.users.get(id);
+    if (!existingUser) return undefined;
+    
+    const updatedUser = { ...existingUser, lastLogin: new Date() };
+    this.users.set(id, updatedUser);
+    return updatedUser;
+  }
+
+  async getUsers(): Promise<User[]> {
+    return Array.from(this.users.values());
+  }
+  
+  // Activity Log methods
+  async logActivity(log: InsertActivityLog): Promise<ActivityLog> {
+    const id = this.activityLogCurrentId++;
+    const timestamp = new Date();
+    const activityLog: ActivityLog = { ...log, id, timestamp };
+    this.activityLogs.set(id, activityLog);
+    return activityLog;
+  }
+  
+  async getActivityLogs(): Promise<ActivityLog[]> {
+    return Array.from(this.activityLogs.values())
+      .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime()); // Sort by newest first
   }
   
   // Menu methods

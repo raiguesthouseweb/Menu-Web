@@ -7,6 +7,17 @@ export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   username: text("username").notNull().unique(),
   password: text("password").notNull(),
+  isAdmin: boolean("is_admin").default(true),
+  lastLogin: timestamp("last_login"),
+});
+
+// Activity Log Schema
+export const activityLogs = pgTable("activity_logs", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id),
+  action: text("action").notNull(),
+  details: text("details"),
+  timestamp: timestamp("timestamp").notNull().defaultNow(),
 });
 
 // Menu Items Schema
@@ -56,6 +67,13 @@ export const adminSettings = pgTable("admin_settings", {
 export const insertUserSchema = createInsertSchema(users).pick({
   username: true,
   password: true,
+  isAdmin: true,
+});
+
+export const insertActivityLogSchema = createInsertSchema(activityLogs).pick({
+  userId: true,
+  action: true,
+  details: true,
 });
 
 export const insertMenuItemSchema = createInsertSchema(menuItems).pick({
@@ -101,6 +119,9 @@ export const insertAdminSettingSchema = createInsertSchema(adminSettings).pick({
 // Types
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
+
+export type InsertActivityLog = z.infer<typeof insertActivityLogSchema>;
+export type ActivityLog = typeof activityLogs.$inferSelect;
 
 export type InsertMenuItem = z.infer<typeof insertMenuItemSchema>;
 export type MenuItem = typeof menuItems.$inferSelect;

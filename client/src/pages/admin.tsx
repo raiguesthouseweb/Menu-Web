@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useMenuItems, useOrders, useTourismPlaces, useBulkSettings } from "@/hooks/use-api";
+import { useWebSocket } from "@/hooks/use-websocket";
 import { ADMIN_PASSWORD, MENU_CATEGORIES, TOURISM_TAGS, ORDER_STATUS_OPTIONS } from "@/config/constants";
 import { useToast } from "@/hooks/use-toast";
 import { formatPrice, formatDate } from "@/lib/utils";
@@ -192,6 +193,37 @@ export default function Admin() {
     deleteTourismPlace
   } = useTourismPlaces();
   const { toast } = useToast();
+  
+  // WebSocket for real-time order notifications
+  useWebSocket({
+    onNewOrder: (order) => {
+      toast({
+        title: "New Order Received",
+        description: `Order #${order.id} from ${order.name} - Room ${order.roomNumber}`,
+        variant: "default",
+      });
+      
+      // Play alert sound if enabled
+      if (orderAlertSound) {
+        const audio = new Audio("/notification.mp3");
+        audio.play().catch(e => console.log("Error playing sound:", e));
+      }
+      
+      // Refresh orders list
+      fetchOrders();
+    },
+    onOrderStatusUpdate: (order) => {
+      toast({
+        title: "Order Status Updated",
+        description: `Order #${order.id} is now ${order.status}`,
+      });
+      
+      // Refresh orders list
+      fetchOrders();
+    },
+    showToasts: true,
+    autoReconnect: true
+  });
   
   // Forms
   const menuItemForm = useForm<z.infer<typeof menuItemSchema>>({
@@ -425,7 +457,7 @@ export default function Admin() {
         name: data.name,
         price: data.price,
         purchasePrice: data.purchasePrice,
-        category: data.category,
+        category: data.category || "",
         details: data.details
       });
     }

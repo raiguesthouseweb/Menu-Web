@@ -277,7 +277,7 @@ export function useAdminSettings(key: string) {
     data: setting, 
     isLoading: loading, 
     error 
-  } = useQuery({
+  } = useQuery<{id: number, key: string, value: string}>({
     queryKey: [`/api/settings/${key}`]
   });
 

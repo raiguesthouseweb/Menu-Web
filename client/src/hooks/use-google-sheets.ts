@@ -2,40 +2,16 @@ import { useState, useEffect } from "react";
 import { MenuItem, TourismPlace, Order } from "@/types";
 import { useToast } from "@/hooks/use-toast";
 
-// Google Sheets API configuration
-const getMenuSpreadsheetId = () => {
-  // Get from environment or localStorage if available
-  return localStorage.getItem("adminSettings") 
-    ? JSON.parse(localStorage.getItem("adminSettings") || "{}")?.menuSpreadsheetId || import.meta.env.VITE_MENU_SPREADSHEET_ID 
-    : import.meta.env.VITE_MENU_SPREADSHEET_ID;
+// Configuration for Google Apps Script Web App
+// Replace this URL with your deployed Apps Script Web App URL
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/YOUR_DEPLOYED_SCRIPT_ID/exec";
+
+// Fallback to direct Google Sheets API if Apps Script deployment is not yet set up
+const getScriptUrl = () => {
+  return localStorage.getItem("adminSettings")
+    ? JSON.parse(localStorage.getItem("adminSettings") || "{}")?.appsScriptUrl || APPS_SCRIPT_URL
+    : APPS_SCRIPT_URL;
 };
-
-const getOrdersSpreadsheetId = () => {
-  return localStorage.getItem("adminSettings") 
-    ? JSON.parse(localStorage.getItem("adminSettings") || "{}")?.ordersSpreadsheetId || import.meta.env.VITE_ORDERS_SPREADSHEET_ID
-    : import.meta.env.VITE_ORDERS_SPREADSHEET_ID;
-};
-
-const getTourismSpreadsheetId = () => {
-  return localStorage.getItem("adminSettings") 
-    ? JSON.parse(localStorage.getItem("adminSettings") || "{}")?.tourismSpreadsheetId || import.meta.env.VITE_TOURISM_SPREADSHEET_ID
-    : import.meta.env.VITE_TOURISM_SPREADSHEET_ID;
-};
-
-const getSheetId = (type: string) => {
-  if (localStorage.getItem("adminSettings")) {
-    const settings = JSON.parse(localStorage.getItem("adminSettings") || "{}");
-    if (type === "menu" && settings.menuSheetId) return settings.menuSheetId;
-    if (type === "orders" && settings.ordersSheetId) return settings.ordersSheetId;
-    if (type === "tourism" && settings.tourismSheetId) return settings.tourismSheetId;
-  }
-  return "0"; // Default to first sheet
-};
-
-const API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
-
-// Base URL for Google Sheets API
-const SHEETS_API_BASE_URL = "https://sheets.googleapis.com/v4/spreadsheets";
 
 // Default data for fallback
 const DEFAULT_MENU_ITEMS: MenuItem[] = [

@@ -4,6 +4,7 @@ export interface MenuItem {
   name: string;
   price: number;
   category: string;
+  details?: string; // Optional details field
 }
 
 export interface OrderItem extends MenuItem {

@@ -161,7 +161,12 @@ export default function Menu() {
                         <CardContent className="p-4 flex justify-between items-center w-full">
                           <div>
                             <h4 className="font-medium">{item.name}</h4>
-                            <p className="text-gray-600 dark:text-gray-400">
+                            {item.details && (
+                              <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-2 mt-1">
+                                {item.details}
+                              </p>
+                            )}
+                            <p className="text-gray-600 dark:text-gray-400 mt-1 font-semibold">
                               {formatPrice(item.price)}
                             </p>
                           </div>

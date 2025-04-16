@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { MenuItem, TourismPlace, Order, OrderItem, AdminUser } from "@/types";
+import { MenuItem, TourismPlace, Order, OrderItem, AdminUser, ActivityLog } from "@/types";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 

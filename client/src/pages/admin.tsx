@@ -920,23 +920,6 @@ export default function Admin() {
                                     
                                     <FormField
                                       control={menuItemForm.control}
-                                      name="purchasePrice"
-                                      render={({ field }) => (
-                                        <FormItem>
-                                          <FormLabel>Purchase Price (₹)</FormLabel>
-                                          <FormControl>
-                                            <Input type="number" {...field} />
-                                          </FormControl>
-                                          <FormDescription>
-                                            Price paid to restaurant for outsourced food items
-                                          </FormDescription>
-                                          <FormMessage />
-                                        </FormItem>
-                                      )}
-                                    />
-                                    
-                                    <FormField
-                                      control={menuItemForm.control}
                                       name="category"
                                       render={({ field }) => (
                                         <FormItem>

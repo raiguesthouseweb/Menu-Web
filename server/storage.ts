@@ -200,7 +200,13 @@ export class MemStorage implements IStorage {
   
   async createMenuItem(item: InsertMenuItem): Promise<MenuItem> {
     const id = this.menuItemCurrentId++;
-    const menuItem: MenuItem = { ...item, id };
+    // Ensure purchasePrice and details are either a number/string or null, not undefined
+    const menuItem: MenuItem = { 
+      ...item, 
+      id,
+      purchasePrice: item.purchasePrice ?? null,
+      details: item.details ?? null
+    };
     this.menuItems.set(id, menuItem);
     return menuItem;
   }
@@ -235,8 +241,14 @@ export class MemStorage implements IStorage {
   
   async createOrder(order: InsertOrder): Promise<Order> {
     const id = this.orderCurrentId++;
-    const timestamp = new Date().toISOString();
-    const newOrder: Order = { ...order, id, timestamp };
+    const timestamp = new Date();
+    const newOrder: Order = { 
+      ...order, 
+      id, 
+      timestamp,
+      name: order.name ?? null,
+      status: order.status ?? "Pending" 
+    };
     this.orders.set(id, newOrder);
     return newOrder;
   }

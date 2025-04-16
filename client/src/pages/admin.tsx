@@ -113,7 +113,8 @@ const tourismPlaceSchema = z.object({
   description: z.string().min(10, { message: "Description must be at least 10 characters" }),
   distance: z.string().min(1, { message: "Distance is required" }),
   tags: z.array(z.string()).min(1, { message: "Select at least one tag" }),
-  mapsLink: z.string().url({ message: "Please enter a valid URL" }).optional().or(z.literal(''))
+  mapsLink: z.string().url({ message: "Please enter a valid URL" }).optional().or(z.literal('')),
+  photoLinks: z.array(z.string().url({ message: "Please enter valid photo URLs" })).optional()
 });
 
 const passwordChangeSchema = z.object({
@@ -258,7 +259,8 @@ export default function Admin() {
       description: "",
       distance: "",
       tags: [],
-      mapsLink: ""
+      mapsLink: "",
+      photoLinks: []
     }
   });
   
@@ -367,6 +369,8 @@ export default function Admin() {
       tourismPlaceForm.setValue("distance", editingTourismPlace.distance);
       tourismPlaceForm.setValue("tags", editingTourismPlace.tags);
       tourismPlaceForm.setValue("mapsLink", editingTourismPlace.mapsLink);
+      // @ts-ignore - photoLinks may not be in the type yet, but it's in the schema
+      tourismPlaceForm.setValue("photoLinks", editingTourismPlace.photoLinks || []);
     } else {
       tourismPlaceForm.reset();
     }

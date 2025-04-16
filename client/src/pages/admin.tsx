@@ -687,6 +687,7 @@ export default function Admin() {
           <TabsTrigger value="invoices">Invoices</TabsTrigger>
           <TabsTrigger value="theme">Theme Editor</TabsTrigger>
           <TabsTrigger value="tourism">Tourism Content</TabsTrigger>
+          <TabsTrigger value="users">Admin Users</TabsTrigger>
           <TabsTrigger value="settings">Settings</TabsTrigger>
         </TabsList>
         

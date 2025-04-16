@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { MenuItem, TourismPlace, Order, OrderItem } from "@/types";
+import { MenuItem, TourismPlace, Order, OrderItem, AdminUser } from "@/types";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 
@@ -362,4 +362,67 @@ export function useBulkSettings() {
   };
 
   return { saveMultipleSettings };
+}
+
+// Admin Users API
+export function useAdminUsers() {
+  const { toast } = useToast();
+  
+  const { 
+    data: users = [], 
+    isLoading: loading, 
+    error,
+    refetch 
+  } = useQuery<AdminUser[]>({
+    queryKey: ['/api/users']
+  });
+
+  const queryClient = useQueryClient();
+
+  const { mutate: addAdminUser } = useMutation({
+    mutationFn: async (userData: { username: string; password: string; isAdmin: boolean; }) => {
+      const res = await apiRequest("POST", "/api/users", userData);
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/users'] });
+      toast({
+        title: "Admin user added",
+        description: "New admin user has been created successfully",
+      });
+    },
+    onError: (err) => {
+      toast({
+        title: "Failed to add user",
+        description: err instanceof Error ? err.message : "An error occurred",
+        variant: "destructive",
+      });
+    }
+  });
+
+  const { mutate: getActivityLogs } = useMutation({
+    mutationFn: async () => {
+      const res = await apiRequest("GET", "/api/activity-logs");
+      return res.json();
+    },
+    onSuccess: (data) => {
+      queryClient.setQueryData(['/api/activity-logs'], data);
+    },
+    onError: (err) => {
+      toast({
+        title: "Failed to fetch activity logs",
+        description: err instanceof Error ? err.message : "An error occurred",
+        variant: "destructive",
+      });
+    }
+  });
+
+  return { 
+    users, 
+    loading, 
+    error, 
+    addAdminUser,
+    getActivityLogs,
+    refetch 
+  };
 }

@@ -72,6 +72,7 @@ import {
   Search, 
   Edit, 
   Trash, 
+  Trash2,
   Plus,
   Loader2,
   LogOut,
@@ -86,7 +87,10 @@ import {
   Calendar,
   Upload,
   Play,
-  Ban
+  Ban,
+  FileText,
+  CheckSquare,
+  DollarSign
 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -1783,6 +1787,348 @@ export default function Admin() {
                   </Table>
                 </div>
               )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+        
+        {/* Invoices Tab */}
+        <TabsContent value="invoices">
+          <Card>
+            <CardHeader>
+              <CardTitle>Invoices & Settlements</CardTitle>
+              <CardDescription>Track room-wise billing and restaurant payments</CardDescription>
+            </CardHeader>
+            <CardContent className="p-6">
+              <Tabs defaultValue="room">
+                <TabsList className="mb-6">
+                  <TabsTrigger value="room">Room-wise Bills</TabsTrigger>
+                  <TabsTrigger value="restaurant">Restaurant Payments</TabsTrigger>
+                </TabsList>
+                
+                <TabsContent value="room">
+                  <div className="mb-4">
+                    <Input 
+                      type="text" 
+                      placeholder="Search by room number" 
+                      className="max-w-md"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                  </div>
+                  
+                  {loadingOrders ? (
+                    <div className="flex justify-center items-center py-12">
+                      <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                    </div>
+                  ) : (
+                    <div className="overflow-x-auto">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Room #</TableHead>
+                            <TableHead>Guest Name</TableHead>
+                            <TableHead>Orders</TableHead>
+                            <TableHead>Total Amount</TableHead>
+                            <TableHead>Settlement Status</TableHead>
+                            <TableHead className="text-right">Actions</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {/* Group orders by room number */}
+                          {Array.from(
+                            orders.reduce((groups, order) => {
+                              const key = order.roomNumber;
+                              if (!groups.has(key)) {
+                                groups.set(key, {
+                                  room: key,
+                                  name: order.name,
+                                  orders: [],
+                                  totalAmount: 0,
+                                  settled: order.settled || false
+                                });
+                              }
+                              const group = groups.get(key);
+                              group.orders.push(order);
+                              group.totalAmount += order.total;
+                              
+                              // If any order is from this guest, use their name
+                              if (order.name) {
+                                group.name = order.name;
+                              }
+                              
+                              // If any order is marked as settled, consider the room settled
+                              if (order.settled) {
+                                group.settled = true;
+                              }
+                              
+                              return groups;
+                            }, new Map())
+                          ).map(([room, data]) => (
+                            <TableRow key={room}>
+                              <TableCell className="font-medium">{room}</TableCell>
+                              <TableCell>{data.name || "—"}</TableCell>
+                              <TableCell>{data.orders.length}</TableCell>
+                              <TableCell>{formatPrice(data.totalAmount)}</TableCell>
+                              <TableCell>
+                                <Badge 
+                                  variant={data.settled ? "outline" : "default"}
+                                  className={data.settled ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100" : ""}
+                                >
+                                  {data.settled ? "Settled" : "Pending"}
+                                </Badge>
+                              </TableCell>
+                              <TableCell className="text-right">
+                                <div className="flex justify-end gap-2">
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => {
+                                      // Set active tab to display order details for this room
+                                      setActiveTab("orders");
+                                      // Set search query to filter orders for this room
+                                      setSearchQuery(room);
+                                      toast({
+                                        title: "Room Orders",
+                                        description: `Viewing orders for room ${room}`,
+                                      });
+                                    }}
+                                  >
+                                    <FileText className="h-4 w-4 mr-1" />
+                                    Details
+                                  </Button>
+                                  
+                                  <Button
+                                    variant={data.settled ? "ghost" : "default"}
+                                    size="sm"
+                                    onClick={() => {
+                                      // Toggle settlement status for all orders from this room
+                                      const newStatus = !data.settled;
+                                      
+                                      // Update all orders from this room
+                                      data.orders.forEach(order => {
+                                        updateOrder({ 
+                                          id: order.id, 
+                                          settled: newStatus 
+                                        });
+                                      });
+                                      
+                                      toast({
+                                        title: newStatus ? "Marked as Settled" : "Marked as Unsettled",
+                                        description: `Room ${room} has been marked as ${newStatus ? "settled" : "unsettled"}`,
+                                      });
+                                    }}
+                                  >
+                                    {data.settled ? (
+                                      <>
+                                        <Ban className="h-4 w-4 mr-1" />
+                                        Unsettle
+                                      </>
+                                    ) : (
+                                      <>
+                                        <CheckSquare className="h-4 w-4 mr-1" />
+                                        Settle
+                                      </>
+                                    )}
+                                  </Button>
+                                </div>
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  )}
+                </TabsContent>
+                
+                <TabsContent value="restaurant">
+                  <div className="mb-6">
+                    <h3 className="text-xl font-semibold mb-4">Restaurant Payment Tracking</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                      <Card>
+                        <CardContent className="pt-6">
+                          <div className="text-2xl font-bold">
+                            {formatPrice(orders.reduce((sum, order) => sum + order.total, 0))}
+                          </div>
+                          <p className="text-sm text-muted-foreground">Total Food Orders Value</p>
+                        </CardContent>
+                      </Card>
+                      
+                      <Card>
+                        <CardContent className="pt-6">
+                          <div className="text-2xl font-bold">
+                            {formatPrice(orders.reduce((sum, order) => {
+                              // Calculate the purchase price total of all items in all orders
+                              let orderPurchaseTotal = 0;
+                              order.items?.forEach(item => {
+                                const menuItem = menuItems.find(mi => mi.id === item.menuItemId);
+                                if (menuItem && menuItem.purchasePrice) {
+                                  orderPurchaseTotal += menuItem.purchasePrice * item.quantity;
+                                }
+                              });
+                              return sum + orderPurchaseTotal;
+                            }, 0))}
+                          </div>
+                          <p className="text-sm text-muted-foreground">Restaurant Payment Due</p>
+                        </CardContent>
+                      </Card>
+                      
+                      <Card>
+                        <CardContent className="pt-6">
+                          <div className="text-2xl font-bold">
+                            {formatPrice(
+                              orders.reduce((sum, order) => sum + order.total, 0) - 
+                              orders.reduce((sum, order) => {
+                                let orderPurchaseTotal = 0;
+                                order.items?.forEach(item => {
+                                  const menuItem = menuItems.find(mi => mi.id === item.menuItemId);
+                                  if (menuItem && menuItem.purchasePrice) {
+                                    orderPurchaseTotal += menuItem.purchasePrice * item.quantity;
+                                  }
+                                });
+                                return sum + orderPurchaseTotal;
+                              }, 0)
+                            )}
+                          </div>
+                          <p className="text-sm text-muted-foreground">Profit Margin</p>
+                        </CardContent>
+                      </Card>
+                      
+                      <Card>
+                        <CardContent className="pt-6">
+                          <div className="text-2xl font-bold">
+                            {(() => {
+                              const totalSales = orders.reduce((sum, order) => sum + order.total, 0);
+                              const totalCost = orders.reduce((sum, order) => {
+                                let orderPurchaseTotal = 0;
+                                order.items?.forEach(item => {
+                                  const menuItem = menuItems.find(mi => mi.id === item.menuItemId);
+                                  if (menuItem && menuItem.purchasePrice) {
+                                    orderPurchaseTotal += menuItem.purchasePrice * item.quantity;
+                                  }
+                                });
+                                return sum + orderPurchaseTotal;
+                              }, 0);
+                              
+                              const profitPercentage = totalSales > 0 
+                                ? Math.round(((totalSales - totalCost) / totalSales) * 100) 
+                                : 0;
+                                
+                              return `${profitPercentage}%`;
+                            })()}
+                          </div>
+                          <p className="text-sm text-muted-foreground">Average Profit %</p>
+                        </CardContent>
+                      </Card>
+                    </div>
+                  </div>
+                  
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Date</TableHead>
+                          <TableHead>Orders</TableHead>
+                          <TableHead>Sale Amount</TableHead>
+                          <TableHead>Cost Price</TableHead>
+                          <TableHead>Profit</TableHead>
+                          <TableHead>Payment Status</TableHead>
+                          <TableHead className="text-right">Actions</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {/* Group orders by date */}
+                        {Array.from(
+                          orders.reduce((groups, order) => {
+                            // Get date portion only from timestamp
+                            const date = new Date(order.timestamp).toISOString().split('T')[0];
+                            if (!groups.has(date)) {
+                              groups.set(date, {
+                                date,
+                                orders: [],
+                                saleAmount: 0,
+                                costPrice: 0,
+                                paid: order.restaurantPaid || false
+                              });
+                            }
+                            const group = groups.get(date);
+                            group.orders.push(order);
+                            group.saleAmount += order.total;
+                            
+                            // Calculate purchase cost
+                            let orderPurchaseTotal = 0;
+                            order.items?.forEach(item => {
+                              const menuItem = menuItems.find(mi => mi.id === item.menuItemId);
+                              if (menuItem && menuItem.purchasePrice) {
+                                orderPurchaseTotal += menuItem.purchasePrice * item.quantity;
+                              }
+                            });
+                            group.costPrice += orderPurchaseTotal;
+                            
+                            // If any order for this date is marked as paid to restaurant
+                            if (order.restaurantPaid) {
+                              group.paid = true;
+                            }
+                            
+                            return groups;
+                          }, new Map())
+                        ).map(([date, data]) => (
+                          <TableRow key={date}>
+                            <TableCell>{formatDate(date)}</TableCell>
+                            <TableCell>{data.orders.length}</TableCell>
+                            <TableCell>{formatPrice(data.saleAmount)}</TableCell>
+                            <TableCell>{formatPrice(data.costPrice)}</TableCell>
+                            <TableCell>
+                              {formatPrice(data.saleAmount - data.costPrice)} (
+                              {Math.round(((data.saleAmount - data.costPrice) / data.saleAmount) * 100)}%)
+                            </TableCell>
+                            <TableCell>
+                              <Badge 
+                                variant="outline" 
+                                className={data.paid
+                                  ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100"
+                                  : "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-100"
+                                }
+                              >
+                                {data.paid ? "Paid" : "Unpaid"}
+                              </Badge>
+                            </TableCell>
+                            <TableCell className="text-right">
+                              <Button
+                                variant={data.paid ? "ghost" : "default"}
+                                size="sm"
+                                onClick={() => {
+                                  // Toggle restaurant payment status for all orders on this date
+                                  const newStatus = !data.paid;
+                                  
+                                  // Update all orders for this date
+                                  data.orders.forEach(order => {
+                                    updateOrder({ 
+                                      id: order.id, 
+                                      restaurantPaid: newStatus 
+                                    });
+                                  });
+                                  
+                                  toast({
+                                    title: newStatus ? "Marked as Paid" : "Marked as Unpaid",
+                                    description: `Restaurant payment for ${formatDate(date)} marked as ${newStatus ? "paid" : "unpaid"}`,
+                                  });
+                                }}
+                              >
+                                {data.paid ? (
+                                  <FileText className="h-4 w-4 mr-1" />
+                                ) : (
+                                  <DollarSign className="h-4 w-4 mr-1" />
+                                )}
+                                {data.paid ? "View Details" : "Mark Paid"}
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                </TabsContent>
+              </Tabs>
             </CardContent>
           </Card>
         </TabsContent>

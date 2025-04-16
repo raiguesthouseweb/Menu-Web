@@ -30,6 +30,8 @@ export const orders = pgTable("orders", {
   mobileNumber: text("mobile_number").notNull(),
   items: jsonb("items").notNull(),
   total: integer("total").notNull(),
+  settled: boolean("settled").default(false),
+  restaurantPaid: boolean("restaurant_paid").default(false),
 });
 
 // Tourism Places Schema
@@ -69,6 +71,7 @@ export const insertOrderSchema = createInsertSchema(orders)
   .extend({
     items: z.array(z.object({
       id: z.number(),
+      menuItemId: z.number(),
       name: z.string(),
       price: z.number(),
       purchasePrice: z.number().optional(),
@@ -76,6 +79,8 @@ export const insertOrderSchema = createInsertSchema(orders)
       details: z.string().optional(),
       quantity: z.number(),
     })),
+    settled: z.boolean().optional().default(false),
+    restaurantPaid: z.boolean().optional().default(false),
   });
 
 export const insertTourismPlaceSchema = createInsertSchema(tourismPlaces).pick({

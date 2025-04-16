@@ -79,7 +79,7 @@ export type TranslationKey =
   | 'admin.orderLimitCount';
 
 // Primary language is English
-const en = {
+const en: Record<TranslationKey, string> = {
   'common.home': 'Home',
   'common.menu': 'Order Food',
   'common.orderStatus': 'Order Status',
@@ -393,16 +393,19 @@ const gu = {
   'tourism.noResults': 'પસંદ કરેલ ફિલ્ટરને અનુરૂપ કોઈ સ્થળો મળ્યા નથી'
 };
 
+// For non-English translations, use Partial to allow incomplete translations
+type PartialTranslations = Partial<Record<TranslationKey, string>>;
+
 // Collection of all translations
-const translations: Record<string, Record<TranslationKey, string>> = {
-  en,
-  hi,
-  bn,
-  te,
-  ta,
-  mr,
-  kn,
-  gu
+const translations: Record<string, PartialTranslations> = {
+  en, // English is complete
+  hi: hi as PartialTranslations,
+  bn: bn as PartialTranslations,
+  te: te as PartialTranslations,
+  ta: ta as PartialTranslations,
+  mr: mr as PartialTranslations,
+  kn: kn as PartialTranslations,
+  gu: gu as PartialTranslations
 };
 
 // Language names for the dropdown

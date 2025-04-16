@@ -40,21 +40,21 @@ export default function Header() {
         <div className="flex justify-between items-center">
           {/* Logo */}
           <Link href="/">
-            <a className="flex items-center space-x-2 cursor-pointer">
+            <div className="flex items-center space-x-2 cursor-pointer">
               <Logo />
               <h1 className="font-semibold text-xl tracking-tight">Rai Guest House</h1>
-            </a>
+            </div>
           </Link>
           
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-6">
             {links.map((link) => (
               <Link key={link.href} href={link.href}>
-                <a className={`text-sm font-medium hover:text-primary ${
+                <div className={`text-sm font-medium hover:text-primary ${
                   location === link.href ? "text-primary" : "text-foreground/80"
                 }`}>
                   {link.label}
-                </a>
+                </div>
               </Link>
             ))}
           </nav>
@@ -88,11 +88,11 @@ export default function Header() {
                   <div className="flex flex-col space-y-4 mt-6">
                     {links.map((link) => (
                       <Link key={link.href} href={link.href}>
-                        <a className={`text-base font-medium ${
+                        <div className={`text-base font-medium ${
                           location === link.href ? "text-primary" : "text-foreground/80"
                         }`}>
                           {link.label}
-                        </a>
+                        </div>
                       </Link>
                     ))}
                   </div>

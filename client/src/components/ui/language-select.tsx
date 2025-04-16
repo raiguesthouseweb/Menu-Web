@@ -7,12 +7,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useLanguage } from "@/hooks/use-language";
+import { languageNames } from "@/lib/translations";
 
-const languages = [
-  { code: "en", name: "English" },
-  { code: "hi", name: "Hindi" },
-  { code: "gu", name: "Gujarati" },
-];
+// Create array of language objects from languageNames
+const languages = Object.entries(languageNames).map(([code, name]) => ({
+  code,
+  name
+}));
 
 export default function LanguageSelect() {
   const { language, setLanguage } = useLanguage();

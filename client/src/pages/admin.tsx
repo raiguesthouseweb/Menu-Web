@@ -93,7 +93,8 @@ import * as z from "zod";
 const menuItemSchema = z.object({
   name: z.string().min(2, { message: "Item name is required" }),
   price: z.coerce.number().min(1, { message: "Price must be greater than 0" }),
-  category: z.string({ required_error: "Please select a category" })
+  category: z.string({ required_error: "Please select a category" }),
+  details: z.string().optional()
 });
 
 const tourismPlaceSchema = z.object({
@@ -183,7 +184,8 @@ export default function Admin() {
     defaultValues: {
       name: "",
       price: 0,
-      category: ""
+      category: "",
+      details: ""
     }
   });
   
@@ -294,6 +296,7 @@ export default function Admin() {
       menuItemForm.setValue("name", editingMenuItem.name);
       menuItemForm.setValue("price", editingMenuItem.price);
       menuItemForm.setValue("category", editingMenuItem.category);
+      menuItemForm.setValue("details", editingMenuItem.details || "");
     } else {
       menuItemForm.reset();
     }

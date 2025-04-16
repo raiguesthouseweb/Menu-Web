@@ -223,20 +223,35 @@ export function useOrders(filterBy?: string) {
   });
 
   const { mutate: updateOrderStatus } = useMutation({
-    mutationFn: async ({ id, status }: { id: number; status: string }) => {
-      const res = await apiRequest("PATCH", `/api/orders/${id}/status`, { status });
+    mutationFn: async ({ 
+      id, 
+      status,
+      settled,
+      restaurantPaid 
+    }: { 
+      id: number; 
+      status?: string;
+      settled?: boolean;
+      restaurantPaid?: boolean;
+    }) => {
+      const updates: Record<string, any> = {};
+      if (status !== undefined) updates.status = status;
+      if (settled !== undefined) updates.settled = settled;
+      if (restaurantPaid !== undefined) updates.restaurantPaid = restaurantPaid;
+      
+      const res = await apiRequest("PATCH", `/api/orders/${id}/status`, updates);
       return res.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/orders'] });
       toast({
-        title: "Order status updated",
-        description: "The order status has been updated",
+        title: "Order updated",
+        description: "The order has been updated successfully",
       });
     },
     onError: (err) => {
       toast({
-        title: "Failed to update order status",
+        title: "Failed to update order",
         description: err instanceof Error ? err.message : "An error occurred",
         variant: "destructive",
       });

@@ -1835,35 +1835,40 @@ export default function Admin() {
                         </TableHeader>
                         <TableBody>
                           {/* Group orders by room number */}
-                          {Array.from(
-                            orders.reduce((groups, order) => {
-                              const key = order.roomNumber;
-                              if (!groups.has(key)) {
-                                groups.set(key, {
-                                  room: key,
-                                  name: order.name,
-                                  orders: [],
-                                  totalAmount: 0,
-                                  settled: order.settled || false
-                                });
-                              }
-                              const group = groups.get(key);
-                              group.orders.push(order);
-                              group.totalAmount += order.total;
-                              
-                              // If any order is from this guest, use their name
-                              if (order.name) {
-                                group.name = order.name;
-                              }
-                              
-                              // If any order is marked as settled, consider the room settled
-                              if (order.settled) {
-                                group.settled = true;
-                              }
-                              
-                              return groups;
-                            }, new Map())
-                          ).map(([room, data]) => (
+                          {Object.entries(orders.reduce((acc, order) => {
+                            const key = order.roomNumber;
+                            
+                            if (!acc[key]) {
+                              acc[key] = {
+                                room: key,
+                                name: order.name || "",
+                                orders: [],
+                                totalAmount: 0,
+                                settled: order.settled || false
+                              };
+                            }
+                            
+                            acc[key].orders.push(order);
+                            acc[key].totalAmount += order.total;
+                            
+                            // If any order is from this guest, use their name
+                            if (order.name) {
+                              acc[key].name = order.name;
+                            }
+                            
+                            // If any order is marked as settled, consider the room settled
+                            if (order.settled) {
+                              acc[key].settled = true;
+                            }
+                            
+                            return acc;
+                          }, {} as Record<string, {
+                            room: string;
+                            name: string;
+                            orders: Order[];
+                            totalAmount: number;
+                            settled: boolean;
+                          }>)).map(([room, data]) => (
                             <TableRow key={room}>
                               <TableCell className="font-medium">{room}</TableCell>
                               <TableCell>{data.name || "—"}</TableCell>
@@ -2037,41 +2042,46 @@ export default function Admin() {
                       </TableHeader>
                       <TableBody>
                         {/* Group orders by date */}
-                        {Array.from(
-                          orders.reduce((groups, order) => {
-                            // Get date portion only from timestamp
-                            const date = new Date(order.timestamp).toISOString().split('T')[0];
-                            if (!groups.has(date)) {
-                              groups.set(date, {
-                                date,
-                                orders: [],
-                                saleAmount: 0,
-                                costPrice: 0,
-                                paid: order.restaurantPaid || false
-                              });
+                        {Object.entries(orders.reduce((acc, order) => {
+                          // Get date portion only from timestamp
+                          const date = new Date(order.timestamp).toISOString().split('T')[0];
+                          
+                          if (!acc[date]) {
+                            acc[date] = {
+                              date,
+                              orders: [],
+                              saleAmount: 0,
+                              costPrice: 0,
+                              paid: order.restaurantPaid || false
+                            };
+                          }
+                          
+                          acc[date].orders.push(order);
+                          acc[date].saleAmount += order.total;
+                          
+                          // Calculate purchase cost
+                          let orderPurchaseTotal = 0;
+                          order.items?.forEach(item => {
+                            const menuItem = menuItems.find(mi => mi.id === item.menuItemId);
+                            if (menuItem && menuItem.purchasePrice) {
+                              orderPurchaseTotal += menuItem.purchasePrice * item.quantity;
                             }
-                            const group = groups.get(date);
-                            group.orders.push(order);
-                            group.saleAmount += order.total;
-                            
-                            // Calculate purchase cost
-                            let orderPurchaseTotal = 0;
-                            order.items?.forEach(item => {
-                              const menuItem = menuItems.find(mi => mi.id === item.menuItemId);
-                              if (menuItem && menuItem.purchasePrice) {
-                                orderPurchaseTotal += menuItem.purchasePrice * item.quantity;
-                              }
-                            });
-                            group.costPrice += orderPurchaseTotal;
-                            
-                            // If any order for this date is marked as paid to restaurant
-                            if (order.restaurantPaid) {
-                              group.paid = true;
-                            }
-                            
-                            return groups;
-                          }, new Map())
-                        ).map(([date, data]) => (
+                          });
+                          acc[date].costPrice += orderPurchaseTotal;
+                          
+                          // If any order for this date is marked as paid to restaurant
+                          if (order.restaurantPaid) {
+                            acc[date].paid = true;
+                          }
+                          
+                          return acc;
+                        }, {} as Record<string, {
+                          date: string;
+                          orders: Order[];
+                          saleAmount: number;
+                          costPrice: number;
+                          paid: boolean;
+                        }>)).map(([date, data]) => (
                           <TableRow key={date}>
                             <TableCell>{formatDate(date)}</TableCell>
                             <TableCell>{data.orders.length}</TableCell>

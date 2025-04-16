@@ -14,6 +14,7 @@ import Footer from "@/components/layout/Footer";
 import { CartProvider } from "@/hooks/use-cart";
 import { ThemeProvider } from "@/hooks/use-theme";
 import { LanguageProvider } from "@/hooks/use-language";
+import { AuthProvider } from "@/hooks/use-auth";
 
 function Router() {
   return (
@@ -35,16 +36,18 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <LanguageProvider>
-          <CartProvider>
-            <div className="flex flex-col min-h-screen">
-              <Header />
-              <main className="flex-grow container-custom py-6">
-                <Router />
-              </main>
-              <Footer />
-            </div>
-            <Toaster />
-          </CartProvider>
+          <AuthProvider>
+            <CartProvider>
+              <div className="flex flex-col min-h-screen">
+                <Header />
+                <main className="flex-grow container-custom py-6">
+                  <Router />
+                </main>
+                <Footer />
+              </div>
+              <Toaster />
+            </CartProvider>
+          </AuthProvider>
         </LanguageProvider>
       </ThemeProvider>
     </QueryClientProvider>

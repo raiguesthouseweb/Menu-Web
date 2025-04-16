@@ -249,7 +249,13 @@ export class MemStorage implements IStorage {
   async logActivity(log: InsertActivityLog): Promise<ActivityLog> {
     const id = this.activityLogCurrentId++;
     const timestamp = new Date();
-    const activityLog: ActivityLog = { ...log, id, timestamp };
+    const activityLog: ActivityLog = { 
+      ...log, 
+      id, 
+      timestamp,
+      userId: log.userId ?? null,
+      details: log.details ?? null
+    };
     this.activityLogs.set(id, activityLog);
     return activityLog;
   }

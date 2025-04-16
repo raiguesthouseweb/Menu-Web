@@ -394,7 +394,8 @@ export default function Admin() {
         ...editingMenuItem,
         name: data.name,
         price: data.price,
-        category: data.category
+        category: data.category,
+        details: data.details
       };
       
       // Update in state
@@ -412,7 +413,8 @@ export default function Admin() {
         id: Date.now(),
         name: data.name,
         price: data.price,
-        category: data.category
+        category: data.category,
+        details: data.details
       };
       
       // Add to state
@@ -774,6 +776,27 @@ export default function Admin() {
                             )}
                           />
                           
+                          <FormField
+                            control={menuItemForm.control}
+                            name="details"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Details (Optional)</FormLabel>
+                                <FormControl>
+                                  <Textarea 
+                                    placeholder="Enter item description or special notes" 
+                                    className="resize-y"
+                                    {...field} 
+                                  />
+                                </FormControl>
+                                <FormDescription>
+                                  Add important details like ingredients, spice level, or allergens
+                                </FormDescription>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          
                           <DialogFooter>
                             <Button type="submit">Save Item</Button>
                           </DialogFooter>
@@ -877,6 +900,27 @@ export default function Admin() {
                                               ))}
                                             </SelectContent>
                                           </Select>
+                                          <FormMessage />
+                                        </FormItem>
+                                      )}
+                                    />
+                                    
+                                    <FormField
+                                      control={menuItemForm.control}
+                                      name="details"
+                                      render={({ field }) => (
+                                        <FormItem>
+                                          <FormLabel>Details (Optional)</FormLabel>
+                                          <FormControl>
+                                            <Textarea 
+                                              placeholder="Enter item description or special notes" 
+                                              className="resize-y"
+                                              {...field} 
+                                            />
+                                          </FormControl>
+                                          <FormDescription>
+                                            Add important details like ingredients, spice level, or allergens
+                                          </FormDescription>
                                           <FormMessage />
                                         </FormItem>
                                       )}

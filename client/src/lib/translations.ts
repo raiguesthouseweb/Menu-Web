@@ -160,6 +160,7 @@ const en: Record<TranslationKey, string> = {
   'tourism.title': 'Explore Ujjain',
   'tourism.distance': 'Distance from Guest House',
   'tourism.viewMap': 'View on Map',
+  'tourism.viewPhotos': 'View Photos',
   'tourism.filter.all': 'All',
   'tourism.filter.religious': 'Religious',
   'tourism.filter.heritage': 'Heritage',

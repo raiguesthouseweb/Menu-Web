@@ -33,6 +33,7 @@ export interface TourismPlace {
   distance: string;
   tags: string[];
   mapsLink: string;
+  photos?: string[]; // Array of Google Drive photo URLs
 }
 
 // Admin related types
